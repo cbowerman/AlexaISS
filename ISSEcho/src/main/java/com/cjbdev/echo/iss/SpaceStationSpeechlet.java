@@ -299,7 +299,6 @@ private SpeechletResponse handleOneshotCityIntentRequest(final Intent intent, fi
 		issStrBldr.append(", Maryland on: ");
 		
 		URL url = new URL("http://spotthestation.nasa.gov/sightings/xml_files/United_States_Maryland_" + cityNameScored + ".xml");
-		System.out.println("url is: " + url.toString());
 		HttpURLConnection httpcon = (HttpURLConnection)url.openConnection();
 
 		// Reading the feed
@@ -413,7 +412,9 @@ private SpeechletResponse handleCityListIntentRequest() {
 		while ((sCurrentLine = reader.readLine()) != null) {
 			cityStrBldr.append("<s>" + sCurrentLine + "</s>");
 			cardStrBldr.append(sCurrentLine + "\n");
-		}		
+		}
+		
+		in.close();
 	}
 	catch (MalformedURLException muex) {
 		System.out.println("MalformedURLException" + muex.getMessage());
