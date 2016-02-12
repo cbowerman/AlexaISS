@@ -525,7 +525,7 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
     
-    card.setTitle("ISS - Visibility from " + cityObject + ", Maryland");
+    card.setTitle("ISS - Visibility from " + cityObject + ", " + stateObject);
     card.setContent(speechText);
 
     // Create the plain text output.
