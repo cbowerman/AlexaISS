@@ -1,50 +1,56 @@
-Alabama
-Alaska
-Arizona
-Arkansas
-California
-Colorado
-Connecticut
-Delaware
-Florida
-Georgia
-Hawaii
-Idaho
-Illinois
-Indiana
-Iowa
-Kansas
-Kentucky
-Louisiana
-Maine
-Maryland
-Massachusetts
-Michigan
-Minnesota
-Mississippi
-Missouri
-Montana
-Nebraska
-Nevada
-New hampshire
-New jersey
-New mexico
-New york
-North Carolina
-North Dakota
-Ohio
-Oklahoma
-Oregon
-Pennsylvania
-Rhode island
-South Carolina
-South Dakota
-Tennessee
-Texas
-Utah
-Vermont
-Virginia
-Washington
-West Virginia
-Wisconsin
-Wyoming
+Alabama,Alabama
+Alaska,Alaska
+Arizona,Arizona
+Arkansas,Arkansas
+California,California
+Colorado,Colorado
+Connecticut,Connecticut
+DC,DC
+Delaware,Delaware
+Florida,Florida
+Georgia,Georgia
+Guam,Guam
+Hawaii,Hawaii
+Idaho,Idaho
+Illinois,Illinois
+Indiana,Indiana
+Iowa,Iowa
+Kansas,Kansas
+Kentucky,Kentucky
+Louisiana,Louisiana
+Maine,Maine
+Mariana Islands,Mariana_Islands
+Maryland,Maryland
+Massachusetts,Massachusetts
+Michigan,Michigan
+Minnesota,Minnesota
+Mississippi,Mississippi
+Missouri,Missouri
+Montana,Montana
+National Parks,National_Parks
+Nebraska,Nebraska
+Nevada,Nevada
+New Hampshire,New_Hampshire
+New Jersey,New_Jersey
+New Mexico,New_Mexico
+New York,New_York
+North Carolina,North_Carolina
+North Dakota,North_Dakota
+Ohio,Ohio
+Oklahoma,Oklahoma
+Oregon,Oregon
+Pennsylvania,Pennsylvania
+Puerto Rico,Puerto_Rico
+Rhode Island,Rhode_Island
+South Carolina,South_Carolina
+South Dakota,South_Dakota
+Tennessee,Tenessee
+Texas,Texas
+Utah,Utah
+Vermont,Vermont
+Virgin Islands,Virgin_Islands
+Virginia,Virginia
+Washington,Washington
+West Virginia,West_Virginia
+Wisconsin,Wisconsin
+Wyoming,Wyoming

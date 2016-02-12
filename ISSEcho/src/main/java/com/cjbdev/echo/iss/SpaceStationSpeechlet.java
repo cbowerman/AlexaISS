@@ -36,8 +36,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -77,6 +80,11 @@ public class SpaceStationSpeechlet implements Speechlet {
 private static final Logger log = LoggerFactory.getLogger(SpaceStationSpeechlet.class);
 
 private static final String SLOT_CITY = "City";
+private static final String SLOT_STATE = "State";
+
+static SpaceStationListLoader ssListLoader = new SpaceStationListLoader();
+
+private static final List<KeyValuePair> STATE_LOOKUP = ssListLoader.loadStateInfo();
 
 //@Override
 public void onSessionStarted(final SessionStartedRequest request, final Session session)
@@ -113,6 +121,8 @@ public SpeechletResponse onIntent(final IntentRequest request, final Session ses
     	return handleOneshotCityIntentRequest(intent, session);
     } else if ("CityListIntent".equals(intentName)) {
     	return handleCityListIntentRequest();
+    } else if ("StateListIntent".equals(intentName)) {
+    	return handleStateListIntentRequest();
     } else if ("AMAZON.HelpIntent".equals(intentName)) {
         return handleHelpRequest();
     } else if ("AMAZON.StopIntent".equals(intentName)) {
@@ -444,6 +454,54 @@ private SpeechletResponse handleCityListIntentRequest() {
 }
 
 /**
+ * Creates a {@code SpeechletResponse} for the StateListIntent.
+ *
+ * @return SpeechletResponse spoken and visual response for the given intent
+ */
+private SpeechletResponse handleStateListIntentRequest() {
+
+	StringBuilder stateStrBldr = new StringBuilder();
+	StringBuilder cardStrBldr = new StringBuilder();
+	
+	stateStrBldr.append("<speak><p>States that have sighting location information are:</p>");
+	cardStrBldr.append("States that have sighting location information are:\n");
+	
+	try {
+
+		
+		for(KeyValuePair item : STATE_LOOKUP) {
+
+			
+			String key = item.getKey();
+		    
+			stateStrBldr.append("<s>" + key + "</s>");
+			cardStrBldr.append(key + "\n");
+		}
+
+	}
+	catch (Exception ex) {
+		System.out.println("Exeption" + ex.getMessage());
+	}
+
+	stateStrBldr.append("</speak>");
+    String speechText = stateStrBldr.toString();
+        
+    // Create the Simple card content.
+    SimpleCard card = new SimpleCard();
+    card.setTitle("ISS - State List");
+    card.setContent(cardStrBldr.toString());
+
+    // Create the plain text output.
+    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+    speech.setText(speechText);
+    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
+    smlspeech.setSsml(speechText);
+
+    return SpeechletResponse.newTellResponse(smlspeech, card);
+}
+
+
+/**
  * Creates and returns a {@code SpeechletResponse} with a welcome message.
  *
  * @return SpeechletResponse spoken and visual response for the given intent
@@ -508,6 +566,5 @@ public void onSessionEnded(final SessionEndedRequest request, final Session sess
     log.info("onSessionEnded requestId={}, sessionId={}", request.getRequestId(),
             session.getSessionId());
 }
-
 
 }

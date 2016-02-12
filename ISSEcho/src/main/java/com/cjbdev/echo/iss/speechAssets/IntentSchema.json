@@ -5,7 +5,23 @@
     },
     {
       "intent": "VisibilityIntent"
-    },    
+    },
+    {
+      "intent": "CityListIntent"
+    },
+    {
+      "intent": "StateListIntent"
+    },
+    {
+      "intent": "OneshotCityIntent",
+      "slots": [
+        {
+          "name": "City",
+          "type": "City"
+        }
+      ]
+      
+    },
     {
       "intent": "AMAZON.HelpIntent"
     },
