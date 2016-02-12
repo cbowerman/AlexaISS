@@ -7,6 +7,8 @@ VisibilityIntent when is next visible
 OneshotCityIntent when it is visible from {City}
 OneshotCityIntent when it is next visible from {City}
 
+CityStateIntent when it is visible from {City} in state {State}
+
 CityListIntent to list locations for {State}
 
 StateListIntent to list states

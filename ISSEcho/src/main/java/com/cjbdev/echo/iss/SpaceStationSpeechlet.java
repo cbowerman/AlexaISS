@@ -35,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -119,6 +120,8 @@ public SpeechletResponse onIntent(final IntentRequest request, final Session ses
     	return handleVisibilityIntentRequest();
     } else if ("OneshotCityIntent".equals(intentName)) {
     	return handleOneshotCityIntentRequest(intent, session);
+    } else if ("CityStateIntent".equals(intentName)) {
+    	return handleCityStateIntentRequest(intent, session);
     } else if ("CityListIntent".equals(intentName)) {
     	return handleCityListIntentRequest(intent, session);
     } else if ("StateListIntent".equals(intentName)) {
@@ -399,6 +402,141 @@ private String getCityFromIntent(final Intent intent, final boolean assignDefaul
     }
     return cityObject;
 }
+
+
+/**
+ * Creates a {@code SpeechletResponse} for the OneshotCityIntent.
+ *
+ * @return SpeechletResponse spoken and visual response for the given intent
+ */
+private SpeechletResponse handleCityStateIntentRequest(final Intent intent, final Session session) {
+
+    String cityObject = null;
+    String stateObject = null;
+	StringBuilder cardStrBldr = new StringBuilder();
+	StringBuilder issStrBldr = new StringBuilder();
+	
+	try {
+
+	    Slot citySlot = intent.getSlot(SLOT_CITY);
+	    Slot stateSlot = intent.getSlot(SLOT_STATE);
+	    KeyValuePair statePair = null;
+	    
+	    if (stateSlot == null || stateSlot.getValue() == null) {
+            throw new Exception("");
+	    } else {
+	    	// lookup the city. Sample skill uses well known mapping of a few known cities to
+	    	// station id.
+	    	stateObject = stateSlot.getValue().trim();
+	    }		
+	    
+	    if (citySlot == null || citySlot.getValue() == null) {
+	            throw new Exception("");
+	    } else {
+	        // lookup the city. Sample skill uses well known mapping of a few known cities to
+	        // station id.
+	        cityObject = citySlot.getValue().trim();
+	    }		
+	    
+	    for (KeyValuePair item : STATE_LOOKUP) {
+	    	if (item.getKey().toLowerCase().equals(stateObject.toLowerCase())) {
+	    		statePair = item;
+	    	}
+	    }
+	    
+		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/" + statePair.getValue());
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
+		List<KeyValuePair> cityList = new ArrayList<KeyValuePair>();
+		
+		String sCurrentLine = "";
+		while ((sCurrentLine = reader.readLine()) != null) {
+			String cityArray[] = sCurrentLine.split(",");
+			KeyValuePair cityItem = new KeyValuePair(cityArray[0], cityArray[1]);
+			cityList.add(cityItem);
+		}
+	    		
+		KeyValuePair cityPair = null;
+		
+		issStrBldr.append("The International Space Station will next be visible from ");
+		issStrBldr.append(cityObject);
+		issStrBldr.append(", " + stateObject + " on: ");
+		
+	    for (KeyValuePair item : cityList) {
+	    	if (item.getKey().toLowerCase().equals(cityObject.toLowerCase())) {
+	    		cityPair = item;
+	    	}
+	    }		
+		
+		URL url = new URL("http://spotthestation.nasa.gov/sightings/xml_files/" + cityPair.getValue() + ".xml");
+		HttpURLConnection httpcon = (HttpURLConnection)url.openConnection();
+
+		// Reading the feed
+		SyndFeedInput input = new SyndFeedInput();
+		SyndFeed feed = input.build(new XmlReader(httpcon));
+		List<SyndEntry> entries = feed.getEntries();
+		Iterator<SyndEntry> itEntries = entries.iterator();
+		
+		boolean first = true;
+		String firstDesc = "";
+
+		while (itEntries.hasNext()) {
+			SyndEntry entry = itEntries.next();
+			SyndContent desc = entry.getDescription();
+			String descStr = desc.getValue();
+			String descStrMod = descStr.replaceAll("<br/>", "");
+			
+			String durationSplitArray[] = descStrMod.split("Duration");
+			String dateTimeStr = durationSplitArray[0];
+			String dateTimeSplitArray[] = dateTimeStr.split("Time:");
+			String dateSplitStr = dateTimeSplitArray[0];
+			String dateArray[] = dateSplitStr.split("Date:");
+			String sightDate = dateArray[1].trim() + " " + dateTimeSplitArray[1].trim();
+						
+			SimpleDateFormat formatter = new SimpleDateFormat("EEEE MMM dd, yyyy hh:mm a");
+
+			Calendar cal = Calendar.getInstance();
+			Calendar future = Calendar.getInstance();
+			future.setTime(formatter.parse(sightDate));
+		    			
+			if ((future.compareTo(cal)>0) && first) {
+				firstDesc = descStrMod;
+				first = false;
+			}
+			
+		}	
+		issStrBldr.append(firstDesc);	
+	}
+	catch (MalformedURLException muex) {
+		System.out.println("MalformedURLException" + muex.getMessage());
+	}
+	catch (IOException ioex) {
+		System.out.println("IOException" + ioex.getMessage());
+	}
+	catch (FeedException fex) {
+		System.out.println("FeedException" + fex.getMessage());
+	}
+	catch (Exception ex) {
+		System.out.println("Exeption" + ex.getMessage());
+	}
+	
+    String speechText = issStrBldr.toString();
+
+    // Create the Simple card content.
+    SimpleCard card = new SimpleCard();
+    
+    card.setTitle("ISS - Visibility from " + cityObject + ", Maryland");
+    card.setContent(speechText);
+
+    // Create the plain text output.
+    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+    speech.setText(speechText);
+
+    return SpeechletResponse.newTellResponse(speech, card);
+}
+
+
+
 
 /**
  * Creates a {@code SpeechletResponse} for the CityListIntent.

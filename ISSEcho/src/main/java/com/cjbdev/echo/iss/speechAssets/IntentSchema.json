@@ -16,6 +16,19 @@
        ]
     },
     {
+      "intent": "CityStateIntent",
+      "slots": [
+        {
+          "name": "City",
+          "type": "City"
+        },
+        {
+          "name": "State",
+          "type": "State"
+        }
+      ]
+    },
+    {
       "intent": "StateListIntent"
     },
     {
