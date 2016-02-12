@@ -7,7 +7,13 @@
       "intent": "VisibilityIntent"
     },
     {
-      "intent": "CityListIntent"
+      "intent": "CityListIntent",
+       "slots": [
+         {
+           "name": "State",
+           "type": "State"
+         }
+       ]
     },
     {
       "intent": "StateListIntent"
@@ -20,7 +26,6 @@
           "type": "City"
         }
       ]
-      
     },
     {
       "intent": "AMAZON.HelpIntent"

@@ -120,7 +120,7 @@ public SpeechletResponse onIntent(final IntentRequest request, final Session ses
     } else if ("OneshotCityIntent".equals(intentName)) {
     	return handleOneshotCityIntentRequest(intent, session);
     } else if ("CityListIntent".equals(intentName)) {
-    	return handleCityListIntentRequest();
+    	return handleCityListIntentRequest(intent, session);
     } else if ("StateListIntent".equals(intentName)) {
     	return handleStateListIntentRequest();
     } else if ("AMAZON.HelpIntent".equals(intentName)) {
@@ -405,23 +405,45 @@ private String getCityFromIntent(final Intent intent, final boolean assignDefaul
  *
  * @return SpeechletResponse spoken and visual response for the given intent
  */
-private SpeechletResponse handleCityListIntentRequest() {
+private SpeechletResponse handleCityListIntentRequest(final Intent intent, final Session session) {
 
+	KeyValuePair statePair = null;
+	
 	StringBuilder cityStrBldr = new StringBuilder();
 	StringBuilder cardStrBldr = new StringBuilder();
 	
-	cityStrBldr.append("<speak><p>Maryland locations I can give visibility information for are:</p>");
-	cardStrBldr.append("Maryland locations I can give visibility information for are:\n");
-	
 	try {
 
-		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/LIST_OF_CITIES");
+	    Slot stateSlot = intent.getSlot(SLOT_STATE);
+	    String stateObject = null;
+
+	    if (stateSlot == null || stateSlot.getValue() == null) {
+	    	throw new Exception("");
+	    } else {
+	        // lookup the city. Sample skill uses well known mapping of a few known cities to
+	        // station id.
+	        stateObject = stateSlot.getValue().trim();
+	    }		
+		
+	    
+	    for (KeyValuePair item : STATE_LOOKUP) {
+	    	if (item.getKey().toLowerCase().equals(stateObject.toLowerCase())) {
+	    		statePair = item;
+	    	}
+	    }
+
+		cityStrBldr.append("<speak><p>Locations in " + statePair.getKey() + " I can give visibility information for are:</p>");
+		cardStrBldr.append("Locations in " + statePair.getKey() + "I can give visibility information for are:\n");	    
+	    
+		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/" + statePair.getValue());
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
 		String sCurrentLine = "";
 		while ((sCurrentLine = reader.readLine()) != null) {
-			cityStrBldr.append("<s>" + sCurrentLine + "</s>");
-			cardStrBldr.append(sCurrentLine + "\n");
+			String cityArray[] = sCurrentLine.split(",");
+			String city = cityArray[0];
+			cityStrBldr.append("<s>" + city + "</s>");
+			cardStrBldr.append(city + "\n");
 		}
 		
 		in.close();
@@ -441,7 +463,7 @@ private SpeechletResponse handleCityListIntentRequest() {
         
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
-    card.setTitle("ISS - Visibility Location List");
+    card.setTitle("ISS - " + statePair.getKey() + " Location List");
     card.setContent(cardStrBldr.toString());
 
     // Create the plain text output.
