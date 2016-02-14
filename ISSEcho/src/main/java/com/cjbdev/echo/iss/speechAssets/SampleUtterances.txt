@@ -1,14 +1,6 @@
-CrewIntent who is the current crew
-CrewIntent who is currently aboard
-
-VisibilityIntent when it is visible
-VisibilityIntent when is next visible
-
-OneshotCityIntent when it is visible from {City}
-OneshotCityIntent when it is next visible from {City}
-
-CityStateIntent when it is visible from {City} in state {State}
+StateListIntent to list states
 
 CityListIntent to list locations for {State}
 
-StateListIntent to list states
+CityStateIntent when it is visible from {City} {State}
+CityStateIntent when it is visible from {City} in state {State}

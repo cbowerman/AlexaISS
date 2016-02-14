@@ -1,10 +1,7 @@
 {
   "intents": [
     {
-      "intent": "CrewIntent"
-    },
-    {
-      "intent": "VisibilityIntent"
+      "intent": "StateListIntent"
     },
     {
       "intent": "CityListIntent",
@@ -25,18 +22,6 @@
         {
           "name": "State",
           "type": "State"
-        }
-      ]
-    },
-    {
-      "intent": "StateListIntent"
-    },
-    {
-      "intent": "OneshotCityIntent",
-      "slots": [
-        {
-          "name": "City",
-          "type": "City"
         }
       ]
     },
