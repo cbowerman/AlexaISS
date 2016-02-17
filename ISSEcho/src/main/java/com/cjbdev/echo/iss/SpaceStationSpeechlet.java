@@ -404,8 +404,16 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
  * @return SpeechletResponse spoken and visual response for the given intent
  */
 private SpeechletResponse getWelcomeResponse() {
+
+	StringBuilder welStrBldr = new StringBuilder();
+
+	welStrBldr.append("Welcome to the International Space Station Sighter.\n");
+	welStrBldr.append("This skill provides sighting information for the International Space Station from certain locations in the United States.\n");
+	welStrBldr.append("The International Space Station is the third brightest object in the sky and easy to spot if you know when and where to look up.\n");
+	welStrBldr.append("The station is visible to the naked eye and looks like a fast-moving plane.\n");
 	
-    String speechText = getWelcomeMessage();
+	
+    String speechText = welStrBldr.toString();
 
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
@@ -429,8 +437,18 @@ private SpeechletResponse getWelcomeResponse() {
  * @return SpeechletResponse spoken and visual response for the given intent
  */
 private SpeechletResponse handleHelpRequest() {
+
+	StringBuilder helpStrBldr = new StringBuilder();
+
+	helpStrBldr.append("This skill provides sighting information for specific locations.\n");
+	helpStrBldr.append("The space station is visible for at least a 50 mile (80 km) radius around each location.\n\n");
+	helpStrBldr.append("If your city or town isn't available then pick the closest location to you.\n");
+	helpStrBldr.append("You need both a state or region and a city or location.\n");
+	helpStrBldr.append("For a list of states or regions say: Alexa ask the space station to list states.\n");
+	helpStrBldr.append("For a list of locations in a state or region say: Alexa ask the space station to list locations in Maryland.\n");
+	helpStrBldr.append("For sighting information say: Alexa ask the space station when it is visible for Gaithersburg Maryland.\n");	
 	
-    String speechText = getWelcomeMessage();
+    String speechText = helpStrBldr.toString();
     
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
@@ -448,21 +466,6 @@ private SpeechletResponse handleHelpRequest() {
     return SpeechletResponse.newAskResponse(speech, reprompt, card);
 }
 
-/*
- * Returns a String that is the welcome message.
- */
-private String getWelcomeMessage() {
-
-	StringBuilder welStrBldr = new StringBuilder();
-
-	welStrBldr.append("Welcome to the Space Station.\n");
-	welStrBldr.append("I provide sighting information for the International Space Station from certain locations in the United States.\n");
-	welStrBldr.append("For a list of states or regions ask to list states.");
-	welStrBldr.append("For a list of locations in each state or regions ask to list locations in {state}.\n");
-	welStrBldr.append("For sighting information for a location ask when it is visible for {location} {state}.\n");
-
-	return welStrBldr.toString();
-}
 
 //@Override
 public void onSessionEnded(final SessionEndedRequest request, final Session session)
