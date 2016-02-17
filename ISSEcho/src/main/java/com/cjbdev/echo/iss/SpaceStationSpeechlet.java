@@ -79,7 +79,6 @@ private static final Logger log = LoggerFactory.getLogger(SpaceStationSpeechlet.
 private static final String SLOT_CITY = "City";
 private static final String SLOT_STATE = "State";
 
-private static final String STATE_MISSING = "STATE_MISSING";
 private static final String STATE_UNKNOWN = "STATE_UNKNOWN";
 private static final String STATE_LIST = "STATE_LIST";
 
@@ -164,10 +163,12 @@ private SpeechletResponse handleCityListIntentRequest(final Intent intent, final
 	try {
 
 	    Slot stateSlot = intent.getSlot(SLOT_STATE);
+	    
 	    String stateObject = null;
 
 	    if (stateSlot == null || stateSlot.getValue() == null) {
-	    	return handleStateList(STATE_MISSING);
+	    
+	    	return handleStateList(STATE_UNKNOWN);
 	    } else {
 	        // lookup the city. Sample skill uses well known mapping of a few known cities to
 	        // station id.
@@ -181,7 +182,8 @@ private SpeechletResponse handleCityListIntentRequest(final Intent intent, final
 	    	}
 	    }
 	    
-	    if (statePair == null) {
+	    if ((statePair == null) || (statePair.getValue() == null) ) {
+	    
 	    	return handleStateList(STATE_UNKNOWN);
 	    }
 
@@ -230,20 +232,13 @@ private SpeechletResponse handleCityListIntentRequest(final Intent intent, final
 
 
 private SpeechletResponse handleStateList(String option) {
-
+	
 	StringBuilder stateStrBldr = new StringBuilder();
 	StringBuilder cardStrBldr = new StringBuilder();
 	
-	if (option.equals(STATE_MISSING)) {
+	if (option.equals(STATE_UNKNOWN)) {
 		stateStrBldr.append("<speak>");
-		stateStrBldr.append("<p>The state or region was missing and needs to be specified.</p>");
-		stateStrBldr.append("<p>States or regions that have sighting location information are:</p>");
-		cardStrBldr.append("The state or region was missing and needs to be specified:\n");
-		cardStrBldr.append("States or regions that have sighting location information are:\n");		
-	}
-	else if (option.equals(STATE_UNKNOWN)) {
-		stateStrBldr.append("<speak>");
-		stateStrBldr.append("<p>The state or region you provided is unknown.</p>");
+		stateStrBldr.append("<p>The state or region you specified is unknown.</p>");
 		stateStrBldr.append("<p>States or regions that have sighting location information are:</p>");
 		cardStrBldr.append("The state or region you provided is unknown.\n");
 		cardStrBldr.append("States or regions that have sighting location information are:\n");
@@ -266,11 +261,8 @@ private SpeechletResponse handleStateList(String option) {
         
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
-    if (option.equals(STATE_MISSING)) {
-    	card.setTitle("ISS - Missing State");	
-    }
-    else if (option.equals(STATE_UNKNOWN)) {
-    	card.setTitle("ISS - Unknown State");
+    if (option.equals(STATE_UNKNOWN)) {
+    	card.setTitle("ISS - Unknown State");	
     }
     else {
     	card.setTitle("ISS - Sighting Information State/Region List");    	
@@ -323,7 +315,7 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    for (KeyValuePair item : STATE_LOOKUP) {
 
 	    	if (item.getKey().toLowerCase().equals(stateObject.toLowerCase())) {
-	    		System.out.println("\n\nGot it!! statePair: " + item.getKey());
+	    		
 	    		statePair = item;
 	    	}
 	    }
