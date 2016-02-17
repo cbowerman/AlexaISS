@@ -1,5 +1,9 @@
 StateListIntent list states
 
+CityListIntent list in {State}
+CityListIntent list for {State}
+CityListIntent list sites in {State}
+CityListIntent list sites for {State}
 CityListIntent list locations in {State}
 CityListIntent list locations for {State}
 
