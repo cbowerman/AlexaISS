@@ -146,22 +146,13 @@ private SpeechletResponse handleStateListIntentRequest() {
 	
 	stateStrBldr.append("<speak><p>States or regions that have sighting location information are:</p>");
 	cardStrBldr.append("States or regions that have sighting location information are:\n");
-	
-	try {
-
 		
-		for(KeyValuePair item : STATE_LOOKUP) {
-
+	for(KeyValuePair item : STATE_LOOKUP) {
 			
-			String key = item.getKey();
+		String key = item.getKey();
 		    
-			stateStrBldr.append("<s>" + key + "</s>");
-			cardStrBldr.append(key + "\n");
-		}
-
-	}
-	catch (Exception ex) {
-		System.out.println("Exeption" + ex.getMessage());
+		stateStrBldr.append("<s>" + key + "</s>");
+		cardStrBldr.append(key + "\n");
 	}
 
 	stateStrBldr.append("</speak>");
