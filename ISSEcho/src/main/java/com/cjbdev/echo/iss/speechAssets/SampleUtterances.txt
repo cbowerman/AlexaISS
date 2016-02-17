@@ -1,4 +1,15 @@
 StateListIntent list states
+StateListIntent list states supported
+StateListIntent what states 
+StateListIntent what states are supported
+StateListIntent which states 
+StateListIntent which states are supported
+StateListIntent list regions
+StateListIntent list regions supported
+StateListIntent what regions
+StateListIntent what regions are supported
+StateListIntent which regions 
+StateListIntent which regions are supported
 
 CityListIntent list in {State}
 CityListIntent list for {State}
@@ -6,6 +17,12 @@ CityListIntent list sites in {State}
 CityListIntent list sites for {State}
 CityListIntent list locations in {State}
 CityListIntent list locations for {State}
+CityListIntent what cities in {State}
+CityListIntent what cities for {State}
+CityListIntent what sites in {State}
+CityListIntent what sites for {State}
+CityListIntent what locations in {State}
+CityListIntent what locations for {State}
 
 CityStateIntent when it is visible from {City} {State}
 CityStateIntent when it is visible from {City} in state {State}
