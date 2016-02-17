@@ -458,7 +458,7 @@ private String getWelcomeMessage() {
 	welStrBldr.append("Welcome to the Space Station.\n");
 	welStrBldr.append("I provide sighting information for the International Space Station from certain locations in the United States.\n");
 	welStrBldr.append("For a list of states or regions ask to list states.");
-	welStrBldr.append("For a list of locations in each state or regio ask to list locations in {state}.\n");
+	welStrBldr.append("For a list of locations in each state or regions ask to list locations in {state}.\n");
 	welStrBldr.append("For sighting information for a location ask when it is visible for {location} {state}.\n");
 
 	return welStrBldr.toString();
