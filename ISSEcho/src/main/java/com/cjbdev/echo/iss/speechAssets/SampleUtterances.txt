@@ -1,6 +1,7 @@
-StateListIntent to list states
+StateListIntent list states
 
-CityListIntent to list locations for {State}
+CityListIntent list locations in {State}
+CityListIntent list locations for {State}
 
 CityStateIntent when it is visible from {City} {State}
 CityStateIntent when it is visible from {City} in state {State}
