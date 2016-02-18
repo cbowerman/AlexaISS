@@ -18,12 +18,16 @@ CityListIntent list sites in {State}
 CityListIntent list sites for {State}
 CityListIntent list locations in {State}
 CityListIntent list locations for {State}
+CityListIntent list places in {State}
+CityListIntent list places for {State}
 CityListIntent what cities in {State}
 CityListIntent what cities for {State}
 CityListIntent what sites in {State}
 CityListIntent what sites for {State}
 CityListIntent what locations in {State}
 CityListIntent what locations for {State}
+CityListIntent what places in {State}
+CityListIntent what places for {State}
 CityListIntent cities in {State}
 CityListIntent cities {State}
 CityListIntent cities
@@ -33,6 +37,9 @@ CityListIntent locations
 CityListIntent sites in {State}
 CityListIntent sites {State}
 CityListIntent sites
+CityListIntent places in {State}
+CityListIntent places {State}
+CityListIntent places
 
 CityStateIntent when it is visible from {City} {State}
 CityStateIntent when it is visible from {City} in {State}
