@@ -50,7 +50,7 @@ import com.rometools.rome.io.XmlReader;
 
 /**
 * @author Christopher Bowerman
-* @version 1.1.1
+* @version 1.2
 * 
 * Creates a Lambda function for handling Alexa Skill requests that:
 * <ul>
