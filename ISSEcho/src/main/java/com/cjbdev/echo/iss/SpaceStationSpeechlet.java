@@ -156,6 +156,27 @@ private SpeechletResponse handleStateListIntentRequest() {
  * @return SpeechletResponse spoken and visual response for the given intent
  */
 private SpeechletResponse handleCityListIntentRequest(final Intent intent, final Session session) {
+	
+	Slot stateSlot = intent.getSlot(SLOT_STATE);
+	Slot citySlot = intent.getSlot(SLOT_CITY);
+	
+	if ((stateSlot == null || stateSlot.getValue() == null) && (citySlot == null || citySlot.getValue() == null)) {
+		StringBuilder cityStrBldr = new StringBuilder();
+		
+		cityStrBldr.append("<speak>");
+		cityStrBldr.append("<p>To list cities or locations a state or region is required.</p>");
+		cityStrBldr.append("<p>For a list of locations in a certain state or region say Alexa ask the space station for cities "
+				+ "in Maryland or another state.</p>");
+		cityStrBldr.append("</speak>");
+		
+		String speechText = cityStrBldr.toString();
+	    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+	    speech.setText(speechText);
+	    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
+	    smlspeech.setSsml(speechText);
+	    
+	    return SpeechletResponse.newTellResponse(smlspeech);
+	}
 
 	return handleCityList(intent, session, CITY_LIST);
 }
