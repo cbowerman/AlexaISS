@@ -81,6 +81,8 @@ private static final String SLOT_STATE = "State";
 
 private static final String STATE_UNKNOWN = "STATE_UNKNOWN";
 private static final String STATE_LIST = "STATE_LIST";
+private static final String CITY_UNKNOWN = "CITY_UNKNOWN";
+private static final String CITY_LIST = "CITY_LIST";
 
 static SpaceStationListLoader ssListLoader = new SpaceStationListLoader();
 
@@ -155,6 +157,66 @@ private SpeechletResponse handleStateListIntentRequest() {
  */
 private SpeechletResponse handleCityListIntentRequest(final Intent intent, final Session session) {
 
+	return handleCityList(intent, session, CITY_LIST);
+}
+
+
+private SpeechletResponse handleStateList(String option) {
+	
+	StringBuilder stateStrBldr = new StringBuilder();
+	StringBuilder cardStrBldr = new StringBuilder();
+	
+	if (option.equals(STATE_UNKNOWN)) {
+		stateStrBldr.append("<speak>");
+		stateStrBldr.append("<p>The state or region you specified is unknown.</p>");
+		stateStrBldr.append("<p>States or regions that have sighting location information are:</p>");
+		cardStrBldr.append("The state or region you provided is unknown.\n");
+		cardStrBldr.append("States or regions that have sighting location information are:\n");
+	}
+	else {
+		stateStrBldr.append("<speak><p>States or regions that have sighting location information are:</p>");
+		cardStrBldr.append("States or regions that have sighting location information are:\n");		
+	}
+		
+	for(KeyValuePair item : STATE_LOOKUP) {
+			
+		String key = item.getKey();
+		    
+		stateStrBldr.append("<s>" + key + "</s>");
+		cardStrBldr.append(key + "\n");
+	}
+
+	stateStrBldr.append("<p>You can get a list cities or locations with sighting information within a state by saying "
+			+ "Alexa ask the space station to list cities in Maryland or one of the other states listed.</p>");
+	cardStrBldr.append("You can get a list cities or locations with sighting information within a state by saying "
+			+ "Alexa ask the space station to list cities in Maryland or one of the other states listed.\n");		
+	
+	stateStrBldr.append("</speak>");
+    String speechText = stateStrBldr.toString();
+        
+    // Create the Simple card content.
+    SimpleCard card = new SimpleCard();
+    if (option.equals(STATE_UNKNOWN)) {
+    	card.setTitle("ISS - Unknown State");	
+    }
+    else {
+    	card.setTitle("ISS - Sighting Information State/Region List");    	
+    }
+    
+    card.setContent(cardStrBldr.toString());
+
+    // Create the plain text output.
+    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+    speech.setText(speechText);
+    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
+    smlspeech.setSsml(speechText);
+
+    return SpeechletResponse.newTellResponse(smlspeech, card);
+}
+
+
+private SpeechletResponse handleCityList(final Intent intent, final Session session, String option) {
+
 	KeyValuePair statePair = null;
 	
 	StringBuilder cityStrBldr = new StringBuilder();
@@ -186,13 +248,23 @@ private SpeechletResponse handleCityListIntentRequest(final Intent intent, final
 	    
 	    	return handleStateList(STATE_UNKNOWN);
 	    }
-
-		cityStrBldr.append("<speak><p>Locations in " + statePair.getKey() + " that have sighting information are:</p>");
-		cardStrBldr.append("Locations in " + statePair.getKey() + " that have sighting information are:\n");	    
 	    
 		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/" + statePair.getValue());
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
+		if (option.equals(CITY_UNKNOWN)) {
+			cityStrBldr.append("<speak>");
+			cityStrBldr.append("<p>The city or location you specified is does not have sighting information.</p>");
+			cityStrBldr.append("<p>Cities or locations in " + statePair.getKey() + " that have sighting location information are:</p>");
+			cardStrBldr.append("The city or location you specified does not have sighting information.\n");
+			cardStrBldr.append("Cities or locations in " + statePair.getKey() + " that have sighting location information are:\n");
+		}
+		else {
+			cityStrBldr.append("<speak><p>Cities or locations in " + statePair.getKey() + " that have sighting location information are:</p>");
+			cardStrBldr.append("Cities or locations in " + statePair.getKey() + " that have sighting location information are:\n");		
+		}		
+		
+		
 		String sCurrentLine = "";
 		while ((sCurrentLine = reader.readLine()) != null) {
 			String cityArray[] = sCurrentLine.split(",");
@@ -218,54 +290,11 @@ private SpeechletResponse handleCityListIntentRequest(final Intent intent, final
         
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
-    card.setTitle("ISS - " + statePair.getKey() + " Location List");
-    card.setContent(cardStrBldr.toString());
-
-    // Create the plain text output.
-    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-    speech.setText(speechText);
-    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
-    smlspeech.setSsml(speechText);
-
-    return SpeechletResponse.newTellResponse(smlspeech, card);
-}
-
-
-private SpeechletResponse handleStateList(String option) {
-	
-	StringBuilder stateStrBldr = new StringBuilder();
-	StringBuilder cardStrBldr = new StringBuilder();
-	
-	if (option.equals(STATE_UNKNOWN)) {
-		stateStrBldr.append("<speak>");
-		stateStrBldr.append("<p>The state or region you specified is unknown.</p>");
-		stateStrBldr.append("<p>States or regions that have sighting location information are:</p>");
-		cardStrBldr.append("The state or region you provided is unknown.\n");
-		cardStrBldr.append("States or regions that have sighting location information are:\n");
-	}
-	else {
-		stateStrBldr.append("<speak><p>States or regions that have sighting location information are:</p>");
-		cardStrBldr.append("States or regions that have sighting location information are:\n");		
-	}
-		
-	for(KeyValuePair item : STATE_LOOKUP) {
-			
-		String key = item.getKey();
-		    
-		stateStrBldr.append("<s>" + key + "</s>");
-		cardStrBldr.append(key + "\n");
-	}
-
-	stateStrBldr.append("</speak>");
-    String speechText = stateStrBldr.toString();
-        
-    // Create the Simple card content.
-    SimpleCard card = new SimpleCard();
-    if (option.equals(STATE_UNKNOWN)) {
-    	card.setTitle("ISS - Unknown State");	
+    if (option.equals(CITY_UNKNOWN)) {
+    	card.setTitle("ISS - Unknown City or Location");	
     }
     else {
-    	card.setTitle("ISS - Sighting Information State/Region List");    	
+        card.setTitle("ISS - " + statePair.getKey() + " Location List");    	
     }
     
     card.setContent(cardStrBldr.toString());
@@ -297,7 +326,7 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    KeyValuePair statePair = null;
 	    	    
 	    if (stateSlot == null || stateSlot.getValue() == null) {
-            throw new Exception("stateSlot is null!");
+            return handleStateList(STATE_UNKNOWN);
 	    } else {
 	    	// lookup the city. Sample skill uses well known mapping of a few known cities to
 	    	// station id.
@@ -305,7 +334,7 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    }		
 	    
 	    if (citySlot == null || citySlot.getValue() == null) {
-	            throw new Exception("citySlot is null!");
+	            return handleCityList(intent, session, CITY_UNKNOWN);
 	    } else {
 	        // lookup the city. Sample skill uses well known mapping of a few known cities to
 	        // station id.
@@ -320,7 +349,11 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    	}
 	    }
 	    
-
+	    if ((statePair == null) || (statePair.getValue() == null) ) {
+		    
+	    	return handleStateList(STATE_UNKNOWN);
+	    }
+	    
 		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/" + statePair.getValue());
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
@@ -349,7 +382,11 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    	if (item.getKey().toLowerCase().equals(cityObject.toLowerCase())) {
 	    		cityPair = item;
 	    	}
-	    }		
+	    }
+	    
+	    if (cityPair == null) {
+	    	return handleCityList(intent, session, CITY_UNKNOWN);
+	    }
 		
 		URL url = new URL("http://spotthestation.nasa.gov/sightings/xml_files/" + cityPair.getValue() + ".xml");
 		HttpURLConnection httpcon = (HttpURLConnection)url.openConnection();
