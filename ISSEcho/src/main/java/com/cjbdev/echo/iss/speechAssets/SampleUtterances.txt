@@ -25,7 +25,14 @@ CityListIntent what sites for {State}
 CityListIntent what locations in {State}
 CityListIntent what locations for {State}
 CityListIntent cities in {State}
+CityListIntent cities {State}
 CityListIntent cities
+CityListIntent locations in {State}
+CityListIntent locations {State}
+CityListIntent locations
+CityListIntent sites in {State}
+CityListIntent sites {State}
+CityListIntent sites
 
 CityStateIntent when it is visible from {City} {State}
 CityStateIntent when it is visible from {City} in {State}
