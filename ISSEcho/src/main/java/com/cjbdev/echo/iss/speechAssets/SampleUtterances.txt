@@ -67,3 +67,4 @@ CityStateIntent give me visibility for {City} {State}
 CityStateIntent give me visibility in {City} {State}
 CityStateIntent give me a time when I can see it from {City} {State}
 CityStateIntent give me a time when I can see it in {City} {State}
+CityStateIntent {City} {State}
