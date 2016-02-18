@@ -10,6 +10,7 @@ StateListIntent what regions
 StateListIntent what regions are supported
 StateListIntent which regions 
 StateListIntent which regions are supported
+StateListIntent states
 
 CityListIntent list in {State}
 CityListIntent list for {State}
@@ -23,10 +24,32 @@ CityListIntent what sites in {State}
 CityListIntent what sites for {State}
 CityListIntent what locations in {State}
 CityListIntent what locations for {State}
+CityListIntent cities in {State}
+CityListIntent cities
 
 CityStateIntent when it is visible from {City} {State}
 CityStateIntent when it is visible from {City} in {State}
 CityStateIntent when it is visible from {City} in state {State}
-CityStateIntent for visible from {City} {State}
-CityStateIntent for visible from {City} in {State}
-CityStateIntent for visible from {City} in state {State}
+CityStateIntent visible from {City} {State}
+CityStateIntent visible from {City} in {State}
+CityStateIntent visible from {City} in state {State}
+CityStateIntent visibility from {City} {State}
+CityStateIntent visibility from {City} in {State}
+CityStateIntent visibliity from {City} in {State}
+CityStateIntent when it is visible in {City} {State}
+CityStateIntent when it is visible in {City} in {State}
+CityStateIntent when it is visible in {City} in state {State}
+CityStateIntent visible in {City} {State}
+CityStateIntent visible in {City} in {State}
+CityStateIntent visible in {City} in state {State}
+CityStateIntent visibility in {City} {State}
+CityStateIntent visibility in {City} in {State}
+CityStateIntent visibliity in {City} in {State}
+CityStateIntent tell me when it is visible from {City} {State}
+CityStateIntent tell me when it is visible in {City} {State}
+CityStateIntent tell me when I can see it from {City} {State}
+CityStateIntent tell me when I can see it in {City} {State}
+CityStateIntent give me visibility for {City} {State}
+CityStateIntent give me visibility in {City} {State}
+CityStateIntent give me a time when I can see it from {City} {State}
+CityStateIntent give me a time when I can see it in {City} {State}
