@@ -11,6 +11,27 @@ StateListIntent what regions are supported
 StateListIntent which regions 
 StateListIntent which regions are supported
 StateListIntent states
+StateListIntent regions
+StateListIntent list states {FirstLetter}
+StateListIntent list states beginning with {FirstLetter}
+StateListIntent list states starting with {FirstLetter}
+StateListIntent what states {FirstLetter}
+StateListIntent what states beginning with {FirstLetter}
+StateListIntent what states starting with {FirstLetter}
+StateListIntent which states {FirstLetter}
+StateListIntent which states beginning with {FirstLetter}
+StateListIntent which states starting with {FirstLetter}
+StateListIntent list regions {FirstLetter}
+StateListIntent list regions beginning with {FirstLetter}
+StateListIntent list regions starting with {FirstLetter}
+StateListIntent what regions {FirstLetter}
+StateListIntent what regions beginning with {FirstLetter}
+StateListIntent what regions starting with {FirstLetter}
+StateListIntent which regions {FirstLetter}
+StateListIntent which regions beginning with {FirstLetter}
+StateListIntent which regions starting with {FirstLetter}
+StateListIntent states {FirstLetter}
+StateListIntent regions {FirstLetter}
 
 CityListIntent list in {State}
 CityListIntent list for {State}
@@ -40,6 +61,90 @@ CityListIntent sites
 CityListIntent places in {State}
 CityListIntent places {State}
 CityListIntent places
+CityListIntent list in {State} {FirstLetter}
+CityListIntent list in {State} beginning with {FirstLetter}
+CityListIntent list in {State} starting with {FirstLetter}
+CityListIntent list for {State} {FirstLetter}
+CityListIntent list for {State} beginning with {FirstLetter}
+CityListIntent list for {State} starting with {FirstLetter}
+CityListIntent list sites in {State} {FirstLetter}
+CityListIntent list sites in {State} beginning with {FirstLetter}
+CityListIntent list sites in {State} starting with {FirstLetter}
+CityListIntent list sites for {State} {FirstLetter}
+CityListIntent list sites for {State} beginning with {FirstLetter}
+CityListIntent list sites for {State} starting with {FirstLetter}
+CityListIntent list locations in {State} {FirstLetter}
+CityListIntent list locations in {State} beginning with {FirstLetter}
+CityListIntent list locations in {State} starting with {FirstLetter}
+CityListIntent list locations for {State} {FirstLetter}
+CityListIntent list locations for {State} beginning with {FirstLetter}
+CityListIntent list locations for {State} starting with {FirstLetter}
+CityListIntent list places in {State} {FirstLetter}
+CityListIntent list places in {State} beginning with {FirstLetter}
+CityListIntent list places in {State} starting with {FirstLetter}
+CityListIntent list places for {State} {FirstLetter}
+CityListIntent list places for {State} beginning with {FirstLetter}
+CityListIntent list places for {State} starting with {FirstLetter}
+CityListIntent what cities in {State} {FirstLetter}
+CityListIntent what cities in {State} beginning with {FirstLetter}
+CityListIntent what cities in {State} starting with {FirstLetter}
+CityListIntent what cities for {State} {FirstLetter}
+CityListIntent what cities for {State} beginning with {FirstLetter}
+CityListIntent what cities for {State} ending with {FirstLetter}
+CityListIntent what sites in {State} {FirstLetter}
+CityListIntent what sites in {State} beginning with {FirstLetter}
+CityListIntent what sites in {State} starting with {FirstLetter}
+CityListIntent what sites for {State} {FirstLetter}
+CityListIntent what sites for {State} beginning with {FirstLetter}
+CityListIntent what sites for {State} starting with {FirstLetter}
+CityListIntent what locations in {State} {FirstLetter}
+CityListIntent what locations in {State} beginning with {FirstLetter}
+CityListIntent what locations in {State} starting with {FirstLetter}
+CityListIntent what locations for {State} {FirstLetter}
+CityListIntent what locations for {State} beginning with {FirstLetter}
+CityListIntent what locations for {State} starting with {FirstLetter}
+CityListIntent what places in {State} {FirstLetter}
+CityListIntent what places in {State} beginning with {FirstLetter}
+CityListIntent what places in {State} starting with {FirstLetter}
+CityListIntent what places for {State} {FirstLetter}
+CityListIntent what places for {State} beginning with {FirstLetter}
+CityListIntent what places for {State} starting with {FirstLetter}
+CityListIntent cities in {State} {FirstLetter}
+CityListIntent cities in {State} beginning with {FirstLetter}
+CityListIntent cities in {State} starting with {FirstLetter}
+CityListIntent cities {State} {FirstLetter}
+CityListIntent cities {State} beginning with {FirstLetter}
+CityListIntent cities {State} starting with {FirstLetter}
+CityListIntent cities {FirstLetter}
+CityListIntent cities beginning with {FirstLetter}
+CityListIntent cities starting with {FirstLetter}
+CityListIntent locations in {State} {FirstLetter}
+CityListIntent locations in {State} beginning with {FirstLetter}
+CityListIntent locations in {State} starting with {FirstLetter}
+CityListIntent locations {State} {FirstLetter}
+CityListIntent locations {State} beginning with {FirstLetter}
+CityListIntent locations {State} starting with {FirstLetter}
+CityListIntent locations {FirstLetter}
+CityListIntent locations beginning with {FirstLetter}
+CityListIntent locations starting with {FirstLetter}
+CityListIntent sites in {State} {FirstLetter}
+CityListIntent sites in {State} beginning with {FirstLetter}
+CityListIntent sites in {State} starting with {FirstLetter}
+CityListIntent sites {State} {FirstLetter}
+CityListIntent sites {State} beginning with {FirstLetter}
+CityListIntent sites {State} starting with {FirstLetter}
+CityListIntent sites {FirstLetter}
+CityListIntent sites beginning with {FirstLetter}
+CityListIntent sites starting with {FirstLetter}
+CityListIntent places in {State} {FirstLetter}
+CityListIntent places in {State} beginning with {FirstLetter}
+CityListIntent places in {State} starting with {FirstLetter}
+CityListIntent places {State} {FirstLetter}
+CityListIntent places {State} beginning with {FirstLetter}
+CityListIntent places {State} starting with {FirstLetter}
+CityListIntent places {FirstLetter}
+CityListIntent places beginning with {FirstLetter}
+CityListIntent places starting with {FirstLetter}
 
 CityStateIntent when it is visible from {City} {State}
 CityStateIntent when it is visible from {City} in {State}

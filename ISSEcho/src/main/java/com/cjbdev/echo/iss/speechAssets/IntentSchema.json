@@ -1,16 +1,26 @@
 {
   "intents": [
     {
-      "intent": "StateListIntent"
+      "intent": "StateListIntent",
+      "slots": [
+        {
+          "name": "FirstLetter",
+          "type": "FirstLetter"
+        }
+      ]
     },
     {
       "intent": "CityListIntent",
-       "slots": [
-         {
-           "name": "State",
-           "type": "State"
-         }
-       ]
+      "slots": [
+        {
+          "name": "State",
+          "type": "State"
+        },
+        {
+          "name": "FirstLetter",
+          "type": "FirstLetter"
+        }
+      ]
     },
     {
       "intent": "CityStateIntent",
