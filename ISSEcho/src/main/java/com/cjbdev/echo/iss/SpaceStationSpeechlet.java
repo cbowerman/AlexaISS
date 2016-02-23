@@ -166,8 +166,8 @@ private SpeechletResponse handleCityListIntentRequest(final Intent intent, final
 		
 		cityStrBldr.append("<speak>");
 		cityStrBldr.append("<p>To list cities or locations a state or region is required.</p>");
-		cityStrBldr.append("<p>For a list of locations in a certain state or region say Alexa ask the space station for cities "
-				+ "in Maryland or another state.</p>");
+		cityStrBldr.append("<p>For a list of locations in a certain state or region say list locations in Maryland or another state.</p>");
+		cityStrBldr.append("<p>This can be filtered by first letter by saying list locations in Maryland or another state beginning with B.</p>");
 		cityStrBldr.append("</speak>");
 		
 		String speechText = cityStrBldr.toString();
@@ -247,11 +247,13 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 			cardStrBldr.append(key + "\n");
 		}
 	}
-
+	
 	stateStrBldr.append("<p>You can get a list cities or locations with sighting information within a state by saying "
 			+ "list cities in Maryland or some other state.</p>");
+	stateStrBldr.append("<p>This can be filtered by first letter by saying list locations in Maryland beginning with B or another letter.</p>");
 	cardStrBldr.append("You can get a list cities or locations with sighting information within a state by saying "
 			+ "list cities in Maryland or some other state.\n");		
+	cardStrBldr.append("This can be filtered by first letter by saying list locations in Maryland beginning with B or another letter.\n");
 	
 	stateStrBldr.append("</speak>");
     String speechText = stateStrBldr.toString();
