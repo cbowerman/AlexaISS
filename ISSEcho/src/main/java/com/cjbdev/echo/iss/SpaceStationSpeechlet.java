@@ -78,6 +78,7 @@ private static final Logger log = LoggerFactory.getLogger(SpaceStationSpeechlet.
 
 private static final String SLOT_CITY = "City";
 private static final String SLOT_STATE = "State";
+private static final String SLOT_LETTER = "FirstLetter";
 
 private static final String STATE_UNKNOWN = "STATE_UNKNOWN";
 private static final String STATE_LIST = "STATE_LIST";
@@ -116,7 +117,7 @@ public SpeechletResponse onIntent(final IntentRequest request, final Session ses
     String intentName = intent.getName();
 
     if ("StateListIntent".equals(intentName)) {
-    	return handleStateListIntentRequest();
+    	return handleStateListIntentRequest(intent, session);
     } else if ("CityListIntent".equals(intentName)) {
     	return handleCityListIntentRequest(intent, session);
     } else if ("CityStateIntent".equals(intentName)) {
@@ -144,9 +145,9 @@ public SpeechletResponse onIntent(final IntentRequest request, final Session ses
  *
  * @return SpeechletResponse spoken and visual response for the given intent
  */
-private SpeechletResponse handleStateListIntentRequest() {
+private SpeechletResponse handleStateListIntentRequest(final Intent intent, final Session session) {
 
-    return handleStateList(STATE_LIST);
+    return handleStateList(intent, session, STATE_LIST);
 }
 
 
@@ -182,17 +183,48 @@ private SpeechletResponse handleCityListIntentRequest(final Intent intent, final
 }
 
 
-private SpeechletResponse handleStateList(String option) {
+private SpeechletResponse handleStateList(final Intent intent, final Session session, String option) {
+	
+	System.out.println("In handleStateList");
 	
 	StringBuilder stateStrBldr = new StringBuilder();
 	StringBuilder cardStrBldr = new StringBuilder();
+
+	Slot letterSlot = intent.getSlot(SLOT_LETTER);
+	boolean shortList = true;
 	
+	if (letterSlot == null || letterSlot.getValue() == null) {
+		shortList = false;
+	}
+		
 	if (option.equals(STATE_UNKNOWN)) {
+
+		StringBuilder rpStrBldr = new StringBuilder();
+		
 		stateStrBldr.append("<speak>");
 		stateStrBldr.append("<p>The state or region you specified is unknown.</p>");
-		stateStrBldr.append("<p>States or regions that have sighting location information are:</p>");
-		cardStrBldr.append("The state or region you provided is unknown.\n");
-		cardStrBldr.append("States or regions that have sighting location information are:\n");
+		stateStrBldr.append("<p>You can get a list of states or regions by saying list states.</p>");
+		stateStrBldr.append("<p>You can narrow the list by saying list states and saying a starting letter such as list states beginning with M.</p>");
+		stateStrBldr.append("</speak>");
+		
+		rpStrBldr.append("<speak>");
+		rpStrBldr.append("For a lists of states or regions say something such as list states.");
+		rpStrBldr.append("</speak>");
+	    
+	    // Create the plain text output.
+	    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+	    speech.setText(stateStrBldr.toString());
+	    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
+	    smlspeech.setSsml(stateStrBldr.toString());
+
+	    // Create reprompt
+	    PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+	    repromptSpeech.setText(rpStrBldr.toString());
+	    Reprompt reprompt = new Reprompt();
+	    reprompt.setOutputSpeech(repromptSpeech);
+
+	    return SpeechletResponse.newAskResponse(smlspeech, reprompt);						
+		
 	}
 	else {
 		stateStrBldr.append("<speak><p>States or regions that have sighting location information are:</p>");
@@ -202,15 +234,24 @@ private SpeechletResponse handleStateList(String option) {
 	for(KeyValuePair item : STATE_LOOKUP) {
 			
 		String key = item.getKey();
-		    
-		stateStrBldr.append("<s>" + key + "</s>");
-		cardStrBldr.append(key + "\n");
+		
+		if (shortList) {
+			
+			if (key.toLowerCase().charAt(0) == letterSlot.getValue().toLowerCase().charAt(0)) {
+				stateStrBldr.append("<s>" + key + "</s>");
+				cardStrBldr.append(key + "\n");				
+			}
+		}
+		else {
+			stateStrBldr.append("<s>" + key + "</s>");
+			cardStrBldr.append(key + "\n");
+		}
 	}
 
 	stateStrBldr.append("<p>You can get a list cities or locations with sighting information within a state by saying "
-			+ "Alexa ask the space station to list cities in Maryland or one of the other states listed.</p>");
+			+ "list cities in Maryland or some other state.</p>");
 	cardStrBldr.append("You can get a list cities or locations with sighting information within a state by saying "
-			+ "Alexa ask the space station to list cities in Maryland or one of the other states listed.\n");		
+			+ "list cities in Maryland or some other state.\n");		
 	
 	stateStrBldr.append("</speak>");
     String speechText = stateStrBldr.toString();
@@ -232,12 +273,15 @@ private SpeechletResponse handleStateList(String option) {
     SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
     smlspeech.setSsml(speechText);
 
+    System.out.println("Leaving handleStateList");
     return SpeechletResponse.newTellResponse(smlspeech, card);
 }
 
 
 private SpeechletResponse handleCityList(final Intent intent, final Session session, String option) {
 
+	System.out.println("In handleCityList");
+	
 	KeyValuePair statePair = null;
 	
 	StringBuilder cityStrBldr = new StringBuilder();
@@ -246,12 +290,19 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 	try {
 
 	    Slot stateSlot = intent.getSlot(SLOT_STATE);
+	
+		Slot letterSlot = intent.getSlot(SLOT_LETTER);
+		boolean shortList = true;
+		
+		if (letterSlot == null || letterSlot.getValue() == null) {
+			shortList = false;
+		}	    
 	    
 	    String stateObject = null;
 
 	    if (stateSlot == null || stateSlot.getValue() == null) {
 	    
-	    	return handleStateList(STATE_UNKNOWN);
+	    	return handleStateList(intent, session, STATE_UNKNOWN);
 	    } else {
 	        // lookup the city. Sample skill uses well known mapping of a few known cities to
 	        // station id.
@@ -267,18 +318,46 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 	    
 	    if ((statePair == null) || (statePair.getValue() == null) ) {
 	    
-	    	return handleStateList(STATE_UNKNOWN);
+	    	return handleStateList(intent, session, STATE_UNKNOWN);
 	    }
 	    
 		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/" + statePair.getValue());
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
 		if (option.equals(CITY_UNKNOWN)) {
+			
+			StringBuilder rpStrBldr = new StringBuilder();
+			
 			cityStrBldr.append("<speak>");
 			cityStrBldr.append("<p>The city or location you specified is does not have sighting information.</p>");
-			cityStrBldr.append("<p>Cities or locations in " + statePair.getKey() + " that have sighting location information are:</p>");
-			cardStrBldr.append("The city or location you specified does not have sighting information.\n");
-			cardStrBldr.append("Cities or locations in " + statePair.getKey() + " that have sighting location information are:\n");
+			cityStrBldr.append("<p>You can get a list of cities or locations by saying list cities in " + statePair.getKey() + "</p>");
+			cityStrBldr.append("</speak>");
+			//cardStrBldr.append("The city or location you specified does not have sighting information.\n");
+			//cardStrBldr.append("Cities or locations in " + statePair.getKey() + " that have sighting location information are:\n");
+			
+			rpStrBldr.append("<speak>");
+			rpStrBldr.append("For a listing of locations in a state say something such as list locations in " + statePair.getKey() + ".");
+			rpStrBldr.append("</speak>");
+		    
+		    // Create the Simple card content.
+		    //SimpleCard card = new SimpleCard();
+		    //card.setTitle("ISS - Help");
+		    //card.setContent(speechText);
+
+		    // Create the plain text output.
+		    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		    speech.setText(cityStrBldr.toString());
+		    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
+		    smlspeech.setSsml(cityStrBldr.toString());
+
+		    // Create reprompt
+		    PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+		    repromptSpeech.setText(rpStrBldr.toString());
+		    Reprompt reprompt = new Reprompt();
+		    reprompt.setOutputSpeech(repromptSpeech);
+
+		    return SpeechletResponse.newAskResponse(smlspeech, reprompt);						
+			
 		}
 		else {
 			cityStrBldr.append("<speak><p>Cities or locations in " + statePair.getKey() + " that have sighting location information are:</p>");
@@ -290,8 +369,20 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 		while ((sCurrentLine = reader.readLine()) != null) {
 			String cityArray[] = sCurrentLine.split(",");
 			String city = cityArray[0];
-			cityStrBldr.append("<s>" + city + "</s>");
-			cardStrBldr.append(city + "\n");
+			
+			if (shortList) {
+				
+				if (city.toLowerCase().charAt(0) == letterSlot.getValue().toLowerCase().charAt(0)) {
+					cityStrBldr.append("<s>" + city + "</s>");
+					cardStrBldr.append(city + "\n");				
+				}
+			}
+			else {
+				cityStrBldr.append("<s>" + city + "</s>");
+				cardStrBldr.append(city + "\n");
+				
+			}		
+			
 		}
 		
 		in.close();
@@ -326,6 +417,7 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
     SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
     smlspeech.setSsml(speechText);
 
+    System.out.println("Leaving handleStateList");
     return SpeechletResponse.newTellResponse(smlspeech, card);
 }
 
@@ -335,6 +427,8 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
  * @return SpeechletResponse spoken and visual response for the given intent
  */
 private SpeechletResponse handleCityStateIntentRequest(final Intent intent, final Session session) {
+	
+	System.out.println("Entering cityStateIntentRequest");
 	
     String cityObject = null;
     String stateObject = null;
@@ -347,7 +441,9 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    KeyValuePair statePair = null;
 	    	    
 	    if (stateSlot == null || stateSlot.getValue() == null) {
-            return handleStateList(STATE_UNKNOWN);
+	    	
+	    	System.out.println("STATE_UNKNOWN: calling handleStateList(unknown)");
+	    	return handleStateList(intent, session, STATE_UNKNOWN);
 	    } else {
 	    	// lookup the city. Sample skill uses well known mapping of a few known cities to
 	    	// station id.
@@ -355,13 +451,16 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    }		
 	    
 	    if (citySlot == null || citySlot.getValue() == null) {
-	            return handleCityList(intent, session, CITY_UNKNOWN);
+	    	
+	    	System.out.println("CITY_UNKNOWN: calling handleCityList(unknown)");	
+	    	return handleCityList(intent, session, CITY_UNKNOWN);
 	    } else {
 	        // lookup the city. Sample skill uses well known mapping of a few known cities to
 	        // station id.
 	        cityObject = citySlot.getValue().trim();
 	    }		
 	    
+	    System.out.println("Lookup State");
 	    for (KeyValuePair item : STATE_LOOKUP) {
 
 	    	if (item.getKey().toLowerCase().equals(stateObject.toLowerCase())) {
@@ -372,23 +471,10 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    
 	    if ((statePair == null) || (statePair.getValue() == null) ) {
 		    
-	    	return handleStateList(STATE_UNKNOWN);
+	    	System.out.println("STATE_UNKNOWN: calling handleStateList(unknown)");
+	    	return handleStateList(intent, session, STATE_UNKNOWN);
 	    }
 	    
-		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/" + statePair.getValue());
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
-		List<KeyValuePair> cityList = new ArrayList<KeyValuePair>();
-		
-		String sCurrentLine = "";
-		while ((sCurrentLine = reader.readLine()) != null) {
-			String cityArray[] = sCurrentLine.split(",");
-			KeyValuePair cityItem = new KeyValuePair(cityArray[0], cityArray[1]);
-			cityList.add(cityItem);
-		}
-	    		
-		KeyValuePair cityPair = null;
-		
 		if (statePair.getKey().equals("National Parks")) {
 			issStrBldr.append("The International Space Station will next be visible from ");
 			issStrBldr.append(cityObject + " on: ");			
@@ -397,8 +483,28 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 			issStrBldr.append("The International Space Station will next be visible from ");
 			issStrBldr.append(cityObject);
 			issStrBldr.append(", " + stateObject + " on: ");			
-		}
+		}	    
+	    
+		System.out.println("Opening stream for state locations file");
+		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/" + statePair.getValue());
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
 		
+		List<KeyValuePair> cityList = new ArrayList<KeyValuePair>();
+		
+		System.out.println("Reading in cities");		
+		String sCurrentLine = "";
+		while ((sCurrentLine = reader.readLine()) != null) {
+			String cityArray[] = sCurrentLine.split(",");
+			KeyValuePair cityItem = new KeyValuePair(cityArray[0], cityArray[1]);
+			cityList.add(cityItem);
+		}
+
+		System.out.println("cityList.size: " + cityList.size());
+		
+		KeyValuePair cityPair = null;
+		
+		System.out.println("Matching city in list");
 	    for (KeyValuePair item : cityList) {
 	    	if (item.getKey().toLowerCase().equals(cityObject.toLowerCase())) {
 	    		cityPair = item;
@@ -406,9 +512,12 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    }
 	    
 	    if (cityPair == null) {
+	    	
+	    	System.out.println("CITY_UNKNOWN: calling handleCityList(unknown)");
 	    	return handleCityList(intent, session, CITY_UNKNOWN);
 	    }
 		
+	    System.out.println("Opening stream to read in data for location");
 		URL url = new URL("http://spotthestation.nasa.gov/sightings/xml_files/" + cityPair.getValue() + ".xml");
 		HttpURLConnection httpcon = (HttpURLConnection)url.openConnection();
 
@@ -473,6 +582,8 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
     PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
     speech.setText(speechText);
 
+    System.out.println("Exiting cityStateIntentRequest");
+    
     return SpeechletResponse.newTellResponse(speech, card);
 }
 
