@@ -491,8 +491,8 @@ private SpeechletResponse getWelcomeResponse() {
 	welStrBldr.append("I can provide sighting information for the International Space Station from certain locations in the United States.\n");
 	welStrBldr.append("The International Space Station is visible to the naked eye and looks like a fast-moving plane.\n");
 	welStrBldr.append("It is the third brightest object in the sky and easy to spot if you know when and where to look up.\n");
-	welStrBldr.append("I can list the locations I have data for by state or region.\n");
-	welStrBldr.append("Or I can list sighting information by specifying a location and state.\n");
+	welStrBldr.append("I can list the locations I have data for by state.\n");
+	welStrBldr.append("Or you can get sighting information by specifying a location and state.\n");
 	welStrBldr.append("What would you like to do?");
 	
 	rpStrBldr.append("For a listing of locations in a state say something such as list locations in Maryland.");
@@ -532,8 +532,8 @@ private SpeechletResponse handleHelpRequest() {
 	helpStrBldr.append("The space station is visible for at least a 50 mile (80 km) radius around each location.\n");
 	helpStrBldr.append("If your city or town isn't available then pick the closest location to you.\n");
 
-	helpStrBldr.append("I can list the locations I have data for by state or region.\n");
-	helpStrBldr.append("Or I can list sighting information by specifying a location and state.\n");
+	helpStrBldr.append("I can list the locations I have data for by state.\n");
+	helpStrBldr.append("Or you can get sighting information by specifying a location and state.\n");
 	helpStrBldr.append("What would you like to do?");
 
 	rpStrBldr.append("For a listing of locations in a state say something such as list locations in Maryland.");	
