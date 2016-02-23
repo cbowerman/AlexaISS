@@ -489,18 +489,20 @@ private SpeechletResponse getWelcomeResponse() {
 	
 	welStrBldr.append("Welcome to the International Space Station Sighter.\n");
 	welStrBldr.append("I can provide sighting information for the International Space Station from certain locations in the United States.\n");
-	welStrBldr.append("The International Space Station is the third brightest object in the sky and easy to spot if you know when and where to look up.\n");
-	welStrBldr.append("The station is visible to the naked eye and looks like a fast-moving plane.\n");
-	rpStrBldr.append("I can list locations I have data for by state or region and I can list sighting information by specifying a location and state.");
-	rpStrBldr.append("What would you like to do?");
+	welStrBldr.append("The International Space Station is visible to the naked eye and looks like a fast-moving plane.\n");
+	welStrBldr.append("It is the third brightest object in the sky and easy to spot if you know when and where to look up.\n");
+	welStrBldr.append("I can list the locations I have data for by state or region.\n");
+	welStrBldr.append("Or I can list sighting information by specifying a location and state.\n");
+	welStrBldr.append("What would you like to do?");
 	
+	rpStrBldr.append("For a listing of locations in a state say something such as list locations in Maryland.");
 	
     String speechText = welStrBldr.toString();
 
     // Create the Simple card content.
-    SimpleCard card = new SimpleCard();
-    card.setTitle("ISS - Welcome");
-    card.setContent(speechText);
+    //SimpleCard card = new SimpleCard();
+    //card.setTitle("ISS - Welcome");
+    //card.setContent(speechText);
 
     // Create the plain text output.
     PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
@@ -510,7 +512,7 @@ private SpeechletResponse getWelcomeResponse() {
     PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
     repromptSpeech.setText(rpStrBldr.toString());
     Reprompt reprompt = new Reprompt();
-    reprompt.setOutputSpeech(speech);
+    reprompt.setOutputSpeech(repromptSpeech);
 
     
     return SpeechletResponse.newAskResponse(speech, reprompt);
@@ -524,31 +526,37 @@ private SpeechletResponse getWelcomeResponse() {
 private SpeechletResponse handleHelpRequest() {
 
 	StringBuilder helpStrBldr = new StringBuilder();
+	StringBuilder rpStrBldr = new StringBuilder();
 
 	helpStrBldr.append("I provide sighting information for the International Space Station from specific locations in the United States.\n");
-	helpStrBldr.append("The space station is visible for at least a 50 mile (80 km) radius around each location.\n\n");
+	helpStrBldr.append("The space station is visible for at least a 50 mile (80 km) radius around each location.\n");
 	helpStrBldr.append("If your city or town isn't available then pick the closest location to you.\n");
-	helpStrBldr.append("You need both a state or region and a city or location.\n");
-	helpStrBldr.append("For a list of states or regions say: Alexa ask the space station to list states.\n");
-	helpStrBldr.append("For a list of locations in a state or region say: Alexa ask the space station to list locations in Maryland.\n");
-	helpStrBldr.append("For sighting information say: Alexa ask the space station when it is visible for Gaithersburg Maryland.\n");	
+
+	helpStrBldr.append("I can list the locations I have data for by state or region.\n");
+	helpStrBldr.append("Or I can list sighting information by specifying a location and state.\n");
+	helpStrBldr.append("What would you like to do?");
+
+	rpStrBldr.append("For a listing of locations in a state say something such as list locations in Maryland.");	
 	
     String speechText = helpStrBldr.toString();
     
     // Create the Simple card content.
-    SimpleCard card = new SimpleCard();
-    card.setTitle("ISS - Help");
-    card.setContent(speechText);
+    //SimpleCard card = new SimpleCard();
+    //card.setTitle("ISS - Help");
+    //card.setContent(speechText);
 
     // Create the plain text output.
     PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
     speech.setText(speechText);
 
     // Create reprompt
+    PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+    repromptSpeech.setText(rpStrBldr.toString());
     Reprompt reprompt = new Reprompt();
-    reprompt.setOutputSpeech(speech);
+    reprompt.setOutputSpeech(repromptSpeech);
 
-    return SpeechletResponse.newAskResponse(speech, reprompt, card);
+    
+    return SpeechletResponse.newAskResponse(speech, reprompt);
 }
 
 
