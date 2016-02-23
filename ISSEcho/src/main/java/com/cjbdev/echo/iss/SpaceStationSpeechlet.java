@@ -485,11 +485,14 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 private SpeechletResponse getWelcomeResponse() {
 
 	StringBuilder welStrBldr = new StringBuilder();
-
+	StringBuilder rpStrBldr = new StringBuilder();
+	
 	welStrBldr.append("Welcome to the International Space Station Sighter.\n");
-	welStrBldr.append("This skill provides sighting information for the International Space Station from certain locations in the United States.\n");
+	welStrBldr.append("I can provide sighting information for the International Space Station from certain locations in the United States.\n");
 	welStrBldr.append("The International Space Station is the third brightest object in the sky and easy to spot if you know when and where to look up.\n");
 	welStrBldr.append("The station is visible to the naked eye and looks like a fast-moving plane.\n");
+	rpStrBldr.append("I can list locations I have data for by state or region and I can list sighting information by specifying a location and state.");
+	rpStrBldr.append("What would you like to do?");
 	
 	
     String speechText = welStrBldr.toString();
@@ -504,10 +507,13 @@ private SpeechletResponse getWelcomeResponse() {
     speech.setText(speechText);
 
     // Create reprompt
+    PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+    repromptSpeech.setText(rpStrBldr.toString());
     Reprompt reprompt = new Reprompt();
     reprompt.setOutputSpeech(speech);
 
-    return SpeechletResponse.newAskResponse(speech, reprompt, card);
+    
+    return SpeechletResponse.newAskResponse(speech, reprompt);
 }
 
 /**
@@ -519,7 +525,7 @@ private SpeechletResponse handleHelpRequest() {
 
 	StringBuilder helpStrBldr = new StringBuilder();
 
-	helpStrBldr.append("This skill provides sighting information for specific locations.\n");
+	helpStrBldr.append("I provide sighting information for the International Space Station from specific locations in the United States.\n");
 	helpStrBldr.append("The space station is visible for at least a 50 mile (80 km) radius around each location.\n\n");
 	helpStrBldr.append("If your city or town isn't available then pick the closest location to you.\n");
 	helpStrBldr.append("You need both a state or region and a city or location.\n");
