@@ -167,16 +167,25 @@ private SpeechletResponse handleCityListIntentRequest(final Intent intent, final
 		cityStrBldr.append("<speak>");
 		cityStrBldr.append("<p>To list cities or locations a state or region is required.</p>");
 		cityStrBldr.append("<p>For a list of locations in a certain state or region say list locations in Maryland or another state.</p>");
-		cityStrBldr.append("<p>This can be filtered by first letter by saying list locations in Maryland or another state beginning with B.</p>");
+		cityStrBldr.append("<p>Shorten the list by saying list locations in Maryland beginning with A or another letter.</p>");
 		cityStrBldr.append("</speak>");
-		
-		String speechText = cityStrBldr.toString();
-	    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-	    speech.setText(speechText);
-	    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
-	    smlspeech.setSsml(speechText);
 	    
-	    return SpeechletResponse.newTellResponse(smlspeech);
+	    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
+	    smlspeech.setSsml(cityStrBldr.toString());
+	    
+	    StringBuilder rpStrBldr = new StringBuilder();
+		rpStrBldr.append("<speak>");
+		rpStrBldr.append("For a lists of states or regions say list states.");
+		rpStrBldr.append("</speak>");
+
+	    SsmlOutputSpeech rpsmlspeech = new  SsmlOutputSpeech();
+	    rpsmlspeech.setSsml(rpStrBldr.toString());
+
+	    // Create reprompt
+	    Reprompt reprompt = new Reprompt();
+	    reprompt.setOutputSpeech(rpsmlspeech);	    
+	    
+	    return SpeechletResponse.newAskResponse(smlspeech, reprompt);
 	}
 
 	return handleCityList(intent, session, CITY_LIST);
@@ -202,24 +211,23 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 		stateStrBldr.append("<speak>");
 		stateStrBldr.append("<p>The state or region you specified is unknown.</p>");
 		stateStrBldr.append("<p>You can get the full a list of states or regions by saying list states.</p>");
-		stateStrBldr.append("<p>Or you can narrow the list by saying list states starting with a letter such as M.</p>");
+		stateStrBldr.append("<p>You can shorten the list by saying list states starting with A or any other letter.</p>");
 		stateStrBldr.append("</speak>");
 		
 		rpStrBldr.append("<speak>");
-		rpStrBldr.append("For a lists of states or regions say something such as list states.");
+		rpStrBldr.append("For a lists of states or regions say list states.");
 		rpStrBldr.append("</speak>");
 	    
 	    // Create the plain text output.
-	    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-	    speech.setText(stateStrBldr.toString());
 	    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
 	    smlspeech.setSsml(stateStrBldr.toString());
 
+	    SsmlOutputSpeech rpsmlspeech = new  SsmlOutputSpeech();
+	    rpsmlspeech.setSsml(rpStrBldr.toString());
+
 	    // Create reprompt
-	    PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
-	    repromptSpeech.setText(rpStrBldr.toString());
 	    Reprompt reprompt = new Reprompt();
-	    reprompt.setOutputSpeech(repromptSpeech);
+	    reprompt.setOutputSpeech(rpsmlspeech);
 
 	    return SpeechletResponse.newAskResponse(smlspeech, reprompt);						
 		
@@ -629,8 +637,9 @@ private SpeechletResponse getWelcomeResponse() {
 	welStrBldr.append("<p>I provide sighting information for the International Space Station from certain locations in the United States.</p>");
 	welStrBldr.append("<p>The space station is visible to the naked eye and is the third brightest object in the sky.</p>");
 	welStrBldr.append("<p>It looks like a fast-moving plane and is easy to spot if you know when and where to look up.</p>");
-	welStrBldr.append("<p>You can get sighting information by saying visibilty from Gaithersburg Maryland or another location and state.</p>");
+	welStrBldr.append("<p>You can get sighting information by saying give me visibilty from Gaithersburg Maryland or another location and state.</p>");
 	welStrBldr.append("<p>I can list the locations in a state by saying list locations in Maryland or another state.</p>");
+	welStrBldr.append("<p>Shorten the list by saying list locations in Maryland starting with A or another letter.</p>");
 	welStrBldr.append("<p>What would you like to do?</p>");
     welStrBldr.append("</speak>");
 	
@@ -662,35 +671,32 @@ private SpeechletResponse handleHelpRequest() {
 	StringBuilder helpStrBldr = new StringBuilder();
 	StringBuilder rpStrBldr = new StringBuilder();
 
-	helpStrBldr.append("I provide sighting information for the International Space Station from specific locations in the United States.\n");
-	helpStrBldr.append("The space station is visible for at least a 50 mile (80 km) radius around each location.\n");
-	helpStrBldr.append("If your city or town isn't available then pick the closest location to you.\n");
-
-	helpStrBldr.append("I can list the locations I have data for by state.\n");
-	helpStrBldr.append("Or you can get sighting information by specifying a location and state.\n");
-	helpStrBldr.append("What would you like to do?");
-
-	rpStrBldr.append("For a listing of locations in a state say something such as list locations in Maryland.");	
+	helpStrBldr.append("<speak>");
+	helpStrBldr.append("<p>I provide sighting information for the International Space Station from specific locations in the United States.</p>");
+	helpStrBldr.append("<p>The space station is visible for at least a 50 mile (80 km) radius around available location.</p>");
+	helpStrBldr.append("<p>If your specific location is not available then pick the closest location to you.</p>");
+	helpStrBldr.append("<p>You can get a list of locations in a state by saying list locations in Maryland or another state.</p>");
+	helpStrBldr.append("<p>Or you can get sighting information by saying give me visability from Gaithersburg Maryland or another location and state.</p>");
+	helpStrBldr.append("<p>Shorten the list by saying list locations in Maryland starting with A or another letter.</p>");
+	helpStrBldr.append("<p>What would you like to do?</p>");
+	helpStrBldr.append("</speak>");
 	
-    String speechText = helpStrBldr.toString();
+	rpStrBldr.append("<speak>");
+	rpStrBldr.append("<p>For a listing of locations in a state say list locations in Maryland or another state.</p>");
+	rpStrBldr.append("</speak>");
+	
+    // Create the ssmloutput text output.
+    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
+    smlspeech.setSsml(helpStrBldr.toString());
+
     
-    // Create the Simple card content.
-    //SimpleCard card = new SimpleCard();
-    //card.setTitle("ISS - Help");
-    //card.setContent(speechText);
-
-    // Create the plain text output.
-    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-    speech.setText(speechText);
-
-    // Create reprompt
-    PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
-    repromptSpeech.setText(rpStrBldr.toString());
+    SsmlOutputSpeech rpsmlspeech = new  SsmlOutputSpeech();
+    rpsmlspeech.setSsml(rpStrBldr.toString());
+    
     Reprompt reprompt = new Reprompt();
-    reprompt.setOutputSpeech(repromptSpeech);
-
+    reprompt.setOutputSpeech(rpsmlspeech);
     
-    return SpeechletResponse.newAskResponse(speech, reprompt);
+    return SpeechletResponse.newAskResponse(smlspeech, reprompt);
 }
 
 
