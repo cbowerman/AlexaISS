@@ -314,8 +314,8 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 	    
 	    	return handleStateList(intent, session, STATE_UNKNOWN);
 	    } else {
-	        // lookup the city. Sample skill uses well known mapping of a few known cities to
-	        // station id.
+	    	
+	        // lookup the state.
 	        stateObject = stateSlot.getValue().trim();
 	    }		
 		
@@ -339,28 +339,25 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 			StringBuilder rpStrBldr = new StringBuilder();
 			
 			cityStrBldr.append("<speak>");
-			cityStrBldr.append("<p>The location you specified is does not have sighting information.</p>");
-			cityStrBldr.append("<p>You can get a list of locations by saying list locations in " + statePair.getKey() + "</p>");
-			cityStrBldr.append("<p>Or this list can be narrowed by saying list locations in " + statePair.getKey() + " starting with B or another letter.</p>");
+			cityStrBldr.append("<p>The location you specified does not have sighting information available.</p>");
+			cityStrBldr.append("<p>You can get locations by saying list locations in " + statePair.getKey() + "</p>");
+			cityStrBldr.append("<p>Shorten the list by saying list locations in " + statePair.getKey() + " starting with A or another letter.</p>");
 			cityStrBldr.append("</speak>");
-			//cardStrBldr.append("The city or location you specified does not have sighting information.\n");
-			//cardStrBldr.append("Cities or locations in " + statePair.getKey() + " that have sighting location information are:\n");
 			
 			rpStrBldr.append("<speak>");
 			rpStrBldr.append("<p>For a listing of locations say list locations in " + statePair.getKey() + ".</p>");
 			rpStrBldr.append("</speak>");
 		    
 		    // Create the plain text output.
-		    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		    speech.setText(cityStrBldr.toString());
 		    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
 		    smlspeech.setSsml(cityStrBldr.toString());
 
+		    
 		    // Create reprompt
-		    PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
-		    repromptSpeech.setText(rpStrBldr.toString());
+		    SsmlOutputSpeech rpsmlspeech = new  SsmlOutputSpeech();
+		    rpsmlspeech.setSsml(rpStrBldr.toString());
 		    Reprompt reprompt = new Reprompt();
-		    reprompt.setOutputSpeech(repromptSpeech);
+		    reprompt.setOutputSpeech(rpsmlspeech);
 
 		    return SpeechletResponse.newAskResponse(smlspeech, reprompt);						
 			
@@ -372,6 +369,7 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 		
 		
 		String sCurrentLine = "";
+		int counter = 0;
 		while ((sCurrentLine = reader.readLine()) != null) {
 			String cityArray[] = sCurrentLine.split(",");
 			String city = cityArray[0];
@@ -380,15 +378,45 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 				
 				if (city.toLowerCase().charAt(0) == letterSlot.getValue().toLowerCase().charAt(0)) {
 					cityStrBldr.append("<s>" + city + "</s>");
-					cardStrBldr.append(city + "\n");				
+					cardStrBldr.append(city + "\n");
+					counter++;
 				}
 			}
 			else {
 				cityStrBldr.append("<s>" + city + "</s>");
 				cardStrBldr.append(city + "\n");
-				
-			}		
+				counter++;
+			}					
+		}
+		
+		// Handle if no locations are returned.
+		if (counter == 0) {
+
+			StringBuilder noStrBldr = new StringBuilder();
+			StringBuilder rpStrBldr = new StringBuilder();
 			
+			noStrBldr.append("<speak>");
+			noStrBldr.append("<p>There does not appear to be any locations matching your criteria.</p>");
+			noStrBldr.append("<p>You can get locations by saying list locations in " + statePair.getKey() + "</p>");
+			noStrBldr.append("<p>Shorten the list by saying list locations in " + statePair.getKey() + " starting with A or another letter.</p>");
+			noStrBldr.append("</speak>");
+			
+			rpStrBldr.append("<speak>");
+			rpStrBldr.append("<p>For a listing of locations say list locations in " + statePair.getKey() + ".</p>");
+			rpStrBldr.append("</speak>");
+		    
+		    // Create the plain text output.
+		    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
+		    smlspeech.setSsml(cityStrBldr.toString());
+
+		    
+		    // Create reprompt
+		    SsmlOutputSpeech rpsmlspeech = new  SsmlOutputSpeech();
+		    rpsmlspeech.setSsml(rpStrBldr.toString());
+		    Reprompt reprompt = new Reprompt();
+		    reprompt.setOutputSpeech(rpsmlspeech);
+
+		    return SpeechletResponse.newAskResponse(smlspeech, reprompt);						
 		}
 		
 		in.close();
@@ -408,7 +436,6 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 	cardStrBldr.append("You can get sighting information for a location by saying "
 			+ "give me visibility for Gaithersburg Maryland or some other location and state combination.\n");			
 	cityStrBldr.append("</speak>");
-    String speechText = cityStrBldr.toString();
         
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
@@ -416,11 +443,9 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
     
     card.setContent(cardStrBldr.toString());
 
-    // Create the plain text output.
-    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-    speech.setText(speechText);
+    // Create the ssmloutput text output.
     SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
-    smlspeech.setSsml(speechText);
+    smlspeech.setSsml(cityStrBldr.toString());
 
     StringBuilder rpStrBldr = new StringBuilder();
 	rpStrBldr.append("<speak>");
@@ -428,11 +453,11 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 			+ "give me visibility for Gaithersburg Maryland or some other location and state combination.</p>");
 	rpStrBldr.append("</speak>");
     
-    // Create reprompt
-    PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
-    repromptSpeech.setText(rpStrBldr.toString());
+    SsmlOutputSpeech rpsmlspeech = new  SsmlOutputSpeech();
+    rpsmlspeech.setSsml(rpStrBldr.toString());
+    
     Reprompt reprompt = new Reprompt();
-    reprompt.setOutputSpeech(repromptSpeech);
+    reprompt.setOutputSpeech(rpsmlspeech);
     
     return SpeechletResponse.newAskResponse(smlspeech, reprompt, card);
 }
