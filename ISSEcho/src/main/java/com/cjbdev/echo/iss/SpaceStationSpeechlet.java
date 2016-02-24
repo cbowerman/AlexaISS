@@ -203,8 +203,8 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 		
 		stateStrBldr.append("<speak>");
 		stateStrBldr.append("<p>The state or region you specified is unknown.</p>");
-		stateStrBldr.append("<p>You can get a list of states or regions by saying list states.</p>");
-		stateStrBldr.append("<p>You can narrow the list by saying list states and saying a starting letter such as list states beginning with M.</p>");
+		stateStrBldr.append("<p>You can get the full a list of states or regions by saying list states.</p>");
+		stateStrBldr.append("<p>Or you can narrow the list by saying list states starting with a letter such as M.</p>");
 		stateStrBldr.append("</speak>");
 		
 		rpStrBldr.append("<speak>");
@@ -248,12 +248,12 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 		}
 	}
 	
-	stateStrBldr.append("<p>You can get a list cities or locations with sighting information within a state by saying "
-			+ "list cities in Maryland or some other state.</p>");
-	stateStrBldr.append("<p>This can be filtered by first letter by saying list locations in Maryland beginning with B or another letter.</p>");
-	cardStrBldr.append("You can get a list cities or locations with sighting information within a state by saying "
-			+ "list cities in Maryland or some other state.\n");		
-	cardStrBldr.append("This can be filtered by first letter by saying list locations in Maryland beginning with B or another letter.\n");
+	stateStrBldr.append("<p>You can get a list locations with sighting information within a state by saying "
+			+ "list locations in Maryland or some other state.</p>");
+	stateStrBldr.append("<p>Or this list can be narrowed by saying list locations in Maryland starting with B or another letter.</p>");
+	cardStrBldr.append("You can get a list locations with sighting information within a state by saying "
+			+ "list locations in Maryland or some other state.\n");		
+	cardStrBldr.append("Or this list can be narrowed by saying list locations in Maryland beginning with B or another letter.\n");
 	
 	stateStrBldr.append("</speak>");
     String speechText = stateStrBldr.toString();
@@ -278,8 +278,8 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
     StringBuilder rpStrBldr = new StringBuilder();
     rpStrBldr.append("<speak>");
     rpStrBldr.append("<p>You can get a list cities or locations with sighting information within a state by saying "
-			+ "list cities in Maryland or some other state.</p>");
-	rpStrBldr.append("<p>This can be filtered by first letter by saying list locations in Maryland beginning with B or another letter.</p>");
+			+ "list locations in Maryland or some other state.</p>");
+	rpStrBldr.append("<p>Or this list can be narrowed by saying list locations in Maryland beginning with B or another letter.</p>");
 	rpStrBldr.append("</speak>");
 	
     Reprompt reprompt = new Reprompt();
@@ -344,21 +344,17 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 			StringBuilder rpStrBldr = new StringBuilder();
 			
 			cityStrBldr.append("<speak>");
-			cityStrBldr.append("<p>The city or location you specified is does not have sighting information.</p>");
-			cityStrBldr.append("<p>You can get a list of cities or locations by saying list cities in " + statePair.getKey() + "</p>");
+			cityStrBldr.append("<p>The location you specified is does not have sighting information.</p>");
+			cityStrBldr.append("<p>You can get a list of locations by saying list locations in " + statePair.getKey() + "</p>");
+			cityStrBldr.append("<p>Or this list can be narrowed by saying list locations in " + statePair.getKey() + " starting with B or another letter.</p>");
 			cityStrBldr.append("</speak>");
 			//cardStrBldr.append("The city or location you specified does not have sighting information.\n");
 			//cardStrBldr.append("Cities or locations in " + statePair.getKey() + " that have sighting location information are:\n");
 			
 			rpStrBldr.append("<speak>");
-			rpStrBldr.append("For a listing of locations in a state say something such as list locations in " + statePair.getKey() + ".");
+			rpStrBldr.append("<p>For a listing of locations say list locations in " + statePair.getKey() + ".</p>");
 			rpStrBldr.append("</speak>");
 		    
-		    // Create the Simple card content.
-		    //SimpleCard card = new SimpleCard();
-		    //card.setTitle("ISS - Help");
-		    //card.setContent(speechText);
-
 		    // Create the plain text output.
 		    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 		    speech.setText(cityStrBldr.toString());
@@ -375,8 +371,8 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 			
 		}
 		else {
-			cityStrBldr.append("<speak><p>Cities or locations in " + statePair.getKey() + " that have sighting location information are:</p>");
-			cardStrBldr.append("Cities or locations in " + statePair.getKey() + " that have sighting location information are:\n");		
+			cityStrBldr.append("<speak><p>Locations in " + statePair.getKey() + " that have sighting information are:</p>");
+			cardStrBldr.append("Locations in " + statePair.getKey() + " that have sighting information are:\n");		
 		}		
 		
 		
@@ -412,17 +408,16 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 		System.out.println("Exeption" + ex.getMessage());
 	}
 
+	cityStrBldr.append("<p>You can get sighting information for a location by saying "
+			+ "give me visibility for Gaithersburg Maryland or some other location and state combination.</p>");
+	cardStrBldr.append("You can get sighting information for a location by saying "
+			+ "give me visibility for Gaithersburg Maryland or some other location and state combination.\n");			
 	cityStrBldr.append("</speak>");
     String speechText = cityStrBldr.toString();
         
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
-    if (option.equals(CITY_UNKNOWN)) {
-    	card.setTitle("ISS - Unknown City or Location");	
-    }
-    else {
-        card.setTitle("ISS - " + statePair.getKey() + " Location List");    	
-    }
+    card.setTitle("ISS - " + statePair.getKey() + " Location List");    	
     
     card.setContent(cardStrBldr.toString());
 
@@ -432,8 +427,21 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
     SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
     smlspeech.setSsml(speechText);
 
+    StringBuilder rpStrBldr = new StringBuilder();
+	rpStrBldr.append("<speak>");
+	rpStrBldr.append("<p>You can get sighting information for a location by saying "
+			+ "give me visibility for Gaithersburg Maryland or some other location and state combination.</p>");
+	rpStrBldr.append("</speak>");
+    
+    // Create reprompt
+    PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+    repromptSpeech.setText(rpStrBldr.toString());
+    Reprompt reprompt = new Reprompt();
+    reprompt.setOutputSpeech(repromptSpeech);
+    
+    
     System.out.println("Leaving handleStateList");
-    return SpeechletResponse.newTellResponse(smlspeech, card);
+    return SpeechletResponse.newAskResponse(smlspeech, reprompt, card);
 }
 
 /**
