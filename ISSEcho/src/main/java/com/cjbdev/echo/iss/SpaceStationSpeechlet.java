@@ -624,35 +624,32 @@ private SpeechletResponse getWelcomeResponse() {
 	StringBuilder welStrBldr = new StringBuilder();
 	StringBuilder rpStrBldr = new StringBuilder();
 	
-	welStrBldr.append("Welcome to the International Space Station Sighter.\n");
-	welStrBldr.append("I can provide sighting information for the International Space Station from certain locations in the United States.\n");
-	welStrBldr.append("The International Space Station is visible to the naked eye and looks like a fast-moving plane.\n");
-	welStrBldr.append("It is the third brightest object in the sky and easy to spot if you know when and where to look up.\n");
-	welStrBldr.append("I can list the locations I have data for by state.\n");
-	welStrBldr.append("Or you can get sighting information by specifying a location and state.\n");
-	welStrBldr.append("What would you like to do?");
+	welStrBldr.append("<speak>");
+	welStrBldr.append("<p>Welcome to the International Space Station Sighter.</p>");
+	welStrBldr.append("<p>I provide sighting information for the International Space Station from certain locations in the United States.</p>");
+	welStrBldr.append("<p>The space station is visible to the naked eye and is the third brightest object in the sky.</p>");
+	welStrBldr.append("<p>It looks like a fast-moving plane and is easy to spot if you know when and where to look up.</p>");
+	welStrBldr.append("<p>You can get sighting information by saying visibilty from Gaithersburg Maryland or another location and state.</p>");
+	welStrBldr.append("<p>I can list the locations in a state by saying list locations in Maryland or another state.</p>");
+	welStrBldr.append("<p>What would you like to do?</p>");
+    welStrBldr.append("</speak>");
 	
-	rpStrBldr.append("For a listing of locations in a state say something such as list locations in Maryland.");
+	rpStrBldr.append("<speak>");	
+	rpStrBldr.append("For a listing of locations in a state say list locations in Maryland or another state.");
+	rpStrBldr.append("</speak>");
 	
-    String speechText = welStrBldr.toString();
-
-    // Create the Simple card content.
-    //SimpleCard card = new SimpleCard();
-    //card.setTitle("ISS - Welcome");
-    //card.setContent(speechText);
-
-    // Create the plain text output.
-    PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-    speech.setText(speechText);
-
-    // Create reprompt
-    PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
-    repromptSpeech.setText(rpStrBldr.toString());
-    Reprompt reprompt = new Reprompt();
-    reprompt.setOutputSpeech(repromptSpeech);
+    // Create the ssmloutput text output.
+    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
+    smlspeech.setSsml(welStrBldr.toString());
 
     
-    return SpeechletResponse.newAskResponse(speech, reprompt);
+    SsmlOutputSpeech rpsmlspeech = new  SsmlOutputSpeech();
+    rpsmlspeech.setSsml(rpStrBldr.toString());
+    
+    Reprompt reprompt = new Reprompt();
+    reprompt.setOutputSpeech(rpsmlspeech);
+    
+    return SpeechletResponse.newAskResponse(smlspeech, reprompt);
 }
 
 /**
