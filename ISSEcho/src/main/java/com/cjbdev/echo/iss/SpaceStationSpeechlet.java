@@ -40,13 +40,14 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
-
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
+
+import org.apache.commons.lang3.text.WordUtils;
 
 /**
 * @author Christopher Bowerman
@@ -372,7 +373,7 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 		}
 		else {
 			cityStrBldr.append("<speak><p>Locations in " + statePair.getKey() + " that have sighting information are:</p>");
-			cardStrBldr.append("Locations in " + statePair.getKey() + " that have sighting information are:\n");		
+			cardStrBldr.append("Locations in " + WordUtils.capitalizeFully(statePair.getKey()) + " that have sighting information are:\n");		
 		}		
 		
 		
@@ -447,7 +448,7 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
         
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
-    card.setTitle("ISS - " + statePair.getKey() + " Location List");    	
+    card.setTitle("ISS - " + WordUtils.capitalizeFully(statePair.getKey()) + " Location List");    	
     
     card.setContent(cardStrBldr.toString());
 
@@ -615,7 +616,7 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
     
-    card.setTitle("ISS - Sighting Information for " + cityObject + ", " + stateObject);
+    card.setTitle("ISS - Sighting Information for " + WordUtils.capitalizeFully(cityObject) + ", " + WordUtils.capitalizeFully(stateObject));
     card.setContent(speechText);
 
     // Create the plain text output.
