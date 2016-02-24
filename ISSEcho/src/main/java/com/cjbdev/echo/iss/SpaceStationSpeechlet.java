@@ -483,6 +483,8 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	
 	try {
 
+		log.info("Entering handleCityStateIntentRequest");
+		
 	    Slot citySlot = intent.getSlot(SLOT_CITY);
 	    Slot stateSlot = intent.getSlot(SLOT_STATE);
 	    KeyValuePair statePair = null;
@@ -554,6 +556,8 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    	return handleCityList(intent, session, CITY_UNKNOWN);
 	    }
 		
+		log.info("Retrieving data for: " + cityPair.getValue());
+	    
 		URL url = new URL("http://spotthestation.nasa.gov/sightings/xml_files/" + cityPair.getValue() + ".xml");
 		HttpURLConnection httpcon = (HttpURLConnection)url.openConnection();
 
@@ -617,6 +621,8 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
     // Create the plain text output.
     PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
     speech.setText(speechText);
+
+	log.info("Exiting handleCityStateIntentRequest");
     
     return SpeechletResponse.newTellResponse(speech, card);
 }
