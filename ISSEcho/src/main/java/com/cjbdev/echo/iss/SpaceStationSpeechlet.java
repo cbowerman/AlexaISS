@@ -185,8 +185,6 @@ private SpeechletResponse handleCityListIntentRequest(final Intent intent, final
 
 private SpeechletResponse handleStateList(final Intent intent, final Session session, String option) {
 	
-	System.out.println("In handleStateList");
-	
 	StringBuilder stateStrBldr = new StringBuilder();
 	StringBuilder cardStrBldr = new StringBuilder();
 
@@ -288,14 +286,11 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 
     reprompt.setOutputSpeech(rpSpeech);
     
-    System.out.println("Leaving handleStateList");
     return SpeechletResponse.newAskResponse(smlspeech, reprompt, card);
 }
 
 
 private SpeechletResponse handleCityList(final Intent intent, final Session session, String option) {
-
-	System.out.println("In handleCityList");
 	
 	KeyValuePair statePair = null;
 	
@@ -439,8 +434,6 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
     Reprompt reprompt = new Reprompt();
     reprompt.setOutputSpeech(repromptSpeech);
     
-    
-    System.out.println("Leaving handleStateList");
     return SpeechletResponse.newAskResponse(smlspeech, reprompt, card);
 }
 
@@ -450,8 +443,6 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
  * @return SpeechletResponse spoken and visual response for the given intent
  */
 private SpeechletResponse handleCityStateIntentRequest(final Intent intent, final Session session) {
-	
-	System.out.println("Entering cityStateIntentRequest");
 	
     String cityObject = null;
     String stateObject = null;
@@ -465,7 +456,6 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    	    
 	    if (stateSlot == null || stateSlot.getValue() == null) {
 	    	
-	    	System.out.println("STATE_UNKNOWN: calling handleStateList(unknown)");
 	    	return handleStateList(intent, session, STATE_UNKNOWN);
 	    } else {
 	    	// lookup the city. Sample skill uses well known mapping of a few known cities to
@@ -474,8 +464,7 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    }		
 	    
 	    if (citySlot == null || citySlot.getValue() == null) {
-	    	
-	    	System.out.println("CITY_UNKNOWN: calling handleCityList(unknown)");	
+	    		
 	    	return handleCityList(intent, session, CITY_UNKNOWN);
 	    } else {
 	        // lookup the city. Sample skill uses well known mapping of a few known cities to
@@ -483,7 +472,6 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	        cityObject = citySlot.getValue().trim();
 	    }		
 	    
-	    System.out.println("Lookup State");
 	    for (KeyValuePair item : STATE_LOOKUP) {
 
 	    	if (item.getKey().toLowerCase().equals(stateObject.toLowerCase())) {
@@ -494,7 +482,6 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    
 	    if ((statePair == null) || (statePair.getValue() == null) ) {
 		    
-	    	System.out.println("STATE_UNKNOWN: calling handleStateList(unknown)");
 	    	return handleStateList(intent, session, STATE_UNKNOWN);
 	    }
 	    
@@ -508,26 +495,21 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 			issStrBldr.append(", " + stateObject + " on: ");			
 		}	    
 	    
-		System.out.println("Opening stream for state locations file");
 		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/" + statePair.getValue());
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
 		
 		List<KeyValuePair> cityList = new ArrayList<KeyValuePair>();
-		
-		System.out.println("Reading in cities");		
+				
 		String sCurrentLine = "";
 		while ((sCurrentLine = reader.readLine()) != null) {
 			String cityArray[] = sCurrentLine.split(",");
 			KeyValuePair cityItem = new KeyValuePair(cityArray[0], cityArray[1]);
 			cityList.add(cityItem);
 		}
-
-		System.out.println("cityList.size: " + cityList.size());
 		
 		KeyValuePair cityPair = null;
 		
-		System.out.println("Matching city in list");
 	    for (KeyValuePair item : cityList) {
 	    	if (item.getKey().toLowerCase().equals(cityObject.toLowerCase())) {
 	    		cityPair = item;
@@ -536,11 +518,9 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    
 	    if (cityPair == null) {
 	    	
-	    	System.out.println("CITY_UNKNOWN: calling handleCityList(unknown)");
 	    	return handleCityList(intent, session, CITY_UNKNOWN);
 	    }
 		
-	    System.out.println("Opening stream to read in data for location");
 		URL url = new URL("http://spotthestation.nasa.gov/sightings/xml_files/" + cityPair.getValue() + ".xml");
 		HttpURLConnection httpcon = (HttpURLConnection)url.openConnection();
 
@@ -604,8 +584,6 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
     // Create the plain text output.
     PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
     speech.setText(speechText);
-
-    System.out.println("Exiting cityStateIntentRequest");
     
     return SpeechletResponse.newTellResponse(speech, card);
 }
