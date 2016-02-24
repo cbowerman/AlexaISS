@@ -274,9 +274,22 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
     speech.setText(speechText);
     SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
     smlspeech.setSsml(speechText);
+  
+    StringBuilder rpStrBldr = new StringBuilder();
+    rpStrBldr.append("<speak>");
+    rpStrBldr.append("<p>You can get a list cities or locations with sighting information within a state by saying "
+			+ "list cities in Maryland or some other state.</p>");
+	rpStrBldr.append("<p>This can be filtered by first letter by saying list locations in Maryland beginning with B or another letter.</p>");
+	rpStrBldr.append("</speak>");
+	
+    Reprompt reprompt = new Reprompt();
+    SsmlOutputSpeech rpSpeech = new  SsmlOutputSpeech();
+    rpSpeech.setSsml(rpStrBldr.toString());
 
+    reprompt.setOutputSpeech(rpSpeech);
+    
     System.out.println("Leaving handleStateList");
-    return SpeechletResponse.newTellResponse(smlspeech, card);
+    return SpeechletResponse.newAskResponse(smlspeech, reprompt, card);
 }
 
 
