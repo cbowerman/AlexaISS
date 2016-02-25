@@ -524,11 +524,11 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    
 		if (statePair.getKey().equals("National Parks")) {
 			issStrBldr.append("The International Space Station will next be visible from ");
-			issStrBldr.append(cityObject + " on: ");			
+			issStrBldr.append(WordUtils.capitalizeFully(cityObject) + " on: ");			
 		} 
 		else {
 			issStrBldr.append("The International Space Station will next be visible from ");
-			issStrBldr.append(cityObject);
+			issStrBldr.append(WordUtils.capitalizeFully(cityObject));
 			issStrBldr.append(", " + stateObject + " on: ");			
 		}	    
 	    
