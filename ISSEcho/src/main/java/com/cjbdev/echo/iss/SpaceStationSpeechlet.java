@@ -683,7 +683,7 @@ private SpeechletResponse handleHelpRequest() {
 	helpStrBldr.append("<p>The space station is visible for at least a 50 mile (80 km) radius around available location.</p>");
 	helpStrBldr.append("<p>If your specific location is not available then pick the closest location to you.</p>");
 	helpStrBldr.append("<p>You can get a list of locations in a state by saying list locations in Maryland or another state.</p>");
-	helpStrBldr.append("<p>Or you can get sighting information by saying give me visability from Gaithersburg Maryland or another location and state.</p>");
+	helpStrBldr.append("<p>Or you can get sighting information by saying give me visibility from Gaithersburg Maryland or another location and state.</p>");
 	helpStrBldr.append("<p>Shorten the list by saying list locations in Maryland starting with A or another letter.</p>");
 	helpStrBldr.append("<p>What would you like to do?</p>");
 	helpStrBldr.append("</speak>");
