@@ -238,7 +238,8 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 		stateStrBldr.append("<p>States or regions with sighting location information are:</p>");
 		cardStrBldr.append("States or regions with sighting location information are:\n");		
 	}
-		
+	
+	int counter = 0;
 	for(KeyValuePair item : STATE_LOOKUP) {
 			
 		String key = item.getKey();
@@ -247,14 +248,46 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 			
 			if (key.toLowerCase().charAt(0) == letterSlot.getValue().toLowerCase().charAt(0)) {
 				stateStrBldr.append("<s>" + key + "</s>");
-				cardStrBldr.append(key + "\n");				
+				cardStrBldr.append(key + "\n");
+				counter++;
 			}
 		}
 		else {
 			stateStrBldr.append("<s>" + key + "</s>");
 			cardStrBldr.append(key + "\n");
+			counter++;
 		}
 	}
+
+	if (counter == 0) {
+		
+		StringBuilder noStrBldr = new StringBuilder();
+		StringBuilder rpStrBldr = new StringBuilder();
+		
+		noStrBldr.append("<speak>");
+		noStrBldr.append("<p>There does not appear to be any regions matching your criteria.</p>");
+		noStrBldr.append("<p>For a full list of states or regions say list states.</p>");
+		noStrBldr.append("<p>Shorten the list by saying list states starting with A or any other letter.</p>");
+		noStrBldr.append("</speak>");
+		
+		rpStrBldr.append("<speak>");
+		rpStrBldr.append("For a lists of states or regions say list states.");
+		rpStrBldr.append("</speak>");
+	    
+	    // Create the plain text output.
+	    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
+	    smlspeech.setSsml(noStrBldr.toString());
+	    
+	    // Create reprompt
+	    SsmlOutputSpeech rpsmlspeech = new  SsmlOutputSpeech();
+	    rpsmlspeech.setSsml(rpStrBldr.toString());
+	    Reprompt reprompt = new Reprompt();
+	    reprompt.setOutputSpeech(rpsmlspeech);
+
+	    return SpeechletResponse.newAskResponse(smlspeech, reprompt);						
+	}
+	
+	
 	
 	stateStrBldr.append("<p>You can get a list locations with sighting information within a state by saying "
 			+ "list locations in Maryland or the name of some other state.</p>");
