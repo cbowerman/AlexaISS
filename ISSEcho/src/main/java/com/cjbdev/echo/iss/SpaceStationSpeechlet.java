@@ -234,7 +234,8 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 		
 	}
 	else {
-		stateStrBldr.append("<speak><p>States or regions with sighting location information are:</p>");
+		stateStrBldr.append("<speak>");
+		stateStrBldr.append("<p>States or regions with sighting location information are:</p>");
 		cardStrBldr.append("States or regions with sighting location information are:\n");		
 	}
 		
@@ -373,7 +374,8 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 			
 		}
 		else {
-			cityStrBldr.append("<speak><p>Locations in " + statePair.getKey() + " with sighting information are:</p>");
+			cityStrBldr.append("<speak>");
+			cityStrBldr.append("<p>Locations in " + statePair.getKey() + " with sighting information are:</p>");
 			cardStrBldr.append("Locations in " + WordUtils.capitalizeFully(statePair.getKey()) + " with sighting information are:\n");		
 		}		
 		
