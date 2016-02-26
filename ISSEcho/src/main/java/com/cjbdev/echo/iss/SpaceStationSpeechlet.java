@@ -51,7 +51,7 @@ import org.apache.commons.lang3.text.WordUtils;
 
 /**
 * @author Christopher Bowerman
-* @version 1.2
+* @version 1.3
 * 
 * Creates a Lambda function for handling Alexa Skill requests that:
 * <ul>
