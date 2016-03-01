@@ -517,6 +517,7 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
     String cityObject = null;
     String stateObject = null;
 	StringBuilder issStrBldr = new StringBuilder();
+	StringBuilder issCrdBldr = new StringBuilder();
 	
 	try {
 
@@ -558,13 +559,24 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    }
 	    
 		if (statePair.getKey().equals("National Parks")) {
-			issStrBldr.append("The International Space Station will next be visible from ");
-			issStrBldr.append(WordUtils.capitalizeFully(cityObject) + " on: ");			
+			issStrBldr.append("<speak>");
+			issStrBldr.append("<p>The International Space Station will next be visible from ");
+			issStrBldr.append(WordUtils.capitalizeFully(cityObject) + " on: </p>");
+			
+			issCrdBldr.append("The International Space Station will next be visible from ");
+			issCrdBldr.append(WordUtils.capitalizeFully(cityObject) + " on: ");			
+
 		} 
 		else {
-			issStrBldr.append("The International Space Station will next be visible from ");
+			issStrBldr.append("<speak>");
+			issStrBldr.append("<p>The International Space Station will next be visible from ");
 			issStrBldr.append(WordUtils.capitalizeFully(cityObject));
-			issStrBldr.append(", " + stateObject + " on: ");			
+			issStrBldr.append(", " + stateObject + " on: </p>");
+			
+			issCrdBldr.append("The International Space Station will next be visible from ");
+			issCrdBldr.append(WordUtils.capitalizeFully(cityObject));
+			issCrdBldr.append(", " + stateObject + " on: ");			
+
 		}	    
 	    
 		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/" + statePair.getValue());
@@ -606,6 +618,8 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 		
 		boolean first = true;
 		String firstDesc = "";
+		String firstDescMod = "";
+		String firstSightDate = "";
 
 		while (itEntries.hasNext()) {
 			SyndEntry entry = itEntries.next();
@@ -627,12 +641,66 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 			future.setTime(formatter.parse(sightDate));
 		    			
 			if ((future.compareTo(cal)>0) && first) {
-				firstDesc = descStrMod;
+				firstDesc = descStr;
+				firstDescMod = descStrMod;
+				firstSightDate = sightDate;
 				first = false;
 			}
 			
 		}	
-		issStrBldr.append(firstDesc);	
+		
+		
+		firstDesc = firstDesc.replaceAll("\t", "");
+		firstDesc = firstDesc.replaceAll("\n", "");
+		
+		String descStrArray[] = firstDesc.split("<br/>");
+		
+		StringBuilder sightLine = new StringBuilder();
+
+		for(String dStr : descStrArray) {	
+			String dTkn = dStr;
+			dTkn = dTkn.trim();
+			
+			if (dTkn.startsWith("Date:")) {
+			
+				String sdArray[] = firstSightDate.split(" ");
+				String fullMonth = getFullMonth(sdArray[1]);
+				String newTkn = dTkn.replace(sdArray[1], fullMonth);
+				sightLine.append("<p>" + newTkn + "</p>");
+			}
+			else if (dTkn.startsWith("Time:")) {
+				
+				sightLine.append("<p>" + dTkn + "</p>");
+			}
+			else if (dTkn.startsWith("Duration:")) {
+				
+				sightLine.append("<p>" + dTkn + "</p>");
+			}
+			else if (dTkn.startsWith("Maximum:")) {
+				
+				sightLine.append("<p>" + dTkn + "</p>");
+			}
+			else if (dTkn.startsWith("Approach:")) {
+				
+				String sStr[] = dTkn.split("above");
+				String abrDir = sStr[1].trim();
+				String dirStr = getFullDirection(abrDir);
+				sightLine.append("<p>" + sStr[0] + "above " + dirStr + "</p>");
+			}
+			else if (dTkn.startsWith("Departure:")) {
+				
+				String sStr[] = dTkn.split("above");
+				String abrDir = sStr[1].trim();
+				String dirStr = getFullDirection(abrDir);
+				sightLine.append("<p>" + sStr[0] + "above " + dirStr + "</p>");
+			}
+		}
+		
+		
+		issStrBldr.append(sightLine.toString());
+		issStrBldr.append("</speak>");
+				
+		issCrdBldr.append(firstDescMod);	
 	}
 	catch (MalformedURLException muex) {
 		System.out.println("MalformedURLException" + muex.getMessage());
@@ -647,23 +715,122 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 		System.out.println("Exeption" + ex.getMessage());
 	}
 	
-    String speechText = issStrBldr.toString();
-
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
     
     card.setTitle("ISS - Sighting Information: " + WordUtils.capitalizeFully(cityObject) + ", " + WordUtils.capitalizeFully(stateObject));
-    card.setContent(speechText);
+    card.setContent(issCrdBldr.toString());
 
     // Create the plain text output.
     PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-    speech.setText(speechText);
+    speech.setText(issStrBldr.toString());
 
+    // Create the ssmloutput text output.
+    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
+    smlspeech.setSsml(issStrBldr.toString());
+    
 	log.debug("Exiting handleCityStateIntentRequest");
     
-    return SpeechletResponse.newTellResponse(speech, card);
+    return SpeechletResponse.newTellResponse(smlspeech, card);
 }
 
+private String getFullDirection(String abrStr) {
+		
+	if (abrStr.equals("N")) {
+		return "North";
+	}
+	else if (abrStr.equals("NNE")) {
+		return "North North West";
+	}
+	else if (abrStr.equals("NE")) {
+		return "North East";
+	}
+	else if (abrStr.equals("ENE")) {
+		return "East North East";
+	}
+	else if (abrStr.equals("E")) {
+		return "East";
+	}
+	else if (abrStr.equals("ESE")) {
+		return "East South East";
+	}
+	else if (abrStr.equals("SE")) {
+		return "South East";
+	}
+	else if (abrStr.equals("SSE")) {
+		return "South South East";
+	}
+	else if (abrStr.equals("S")) {
+		return "South";
+	}
+	else if (abrStr.equals("SSW")) {
+		return "South South West";
+	}
+	else if (abrStr.equals("SW")) {
+		return "South West";
+	}
+	else if (abrStr.equals("WSW")) {
+		return "West South West";
+	}
+	else if (abrStr.equals("W")) {
+		return "West";
+	}
+	else if (abrStr.equals("WNW")) {
+		return "West North West";
+	}
+	else if (abrStr.equals("NW")) {
+		return "North West";
+	}
+	else if (abrStr.equals("NNW")) {
+		return "North North West";
+	}
+	
+	// if doesn't change just use the abbreviation after all
+	return abrStr;
+}
+
+private String getFullMonth(String abrStr) {
+	
+	if (abrStr.toLowerCase().equals("jan")) {
+		return "January";
+	}
+	else if (abrStr.toLowerCase().equals("feb")) {
+		return "February";
+	}
+	else if (abrStr.toLowerCase().equals("mar")) {
+		return "March";
+	}
+	else if (abrStr.toLowerCase().equals("apr")) {
+		return "April";
+	}
+	else if (abrStr.toLowerCase().equals("may")) {
+		return "May";
+	}
+	else if (abrStr.toLowerCase().equals("jun")) {
+		return "June";
+	}
+	else if (abrStr.toLowerCase().equals("jul")) {
+		return "July";
+	}
+	else if (abrStr.toLowerCase().equals("aug")) {
+		return "August";
+	}
+	else if (abrStr.toLowerCase().equals("sep")) {
+		return "September";
+	}
+	else if (abrStr.toLowerCase().equals("oct")) {
+		return "October";
+	}
+	else if (abrStr.toLowerCase().equals("nov")) {
+		return "November";
+	}
+	else if (abrStr.toLowerCase().equals("dec")) {
+		return "December";
+	}
+	
+	// if doesn't change just use the abbreviation after all
+	return abrStr;
+}
 
 /**
  * Creates and returns a {@code SpeechletResponse} with a welcome message.
