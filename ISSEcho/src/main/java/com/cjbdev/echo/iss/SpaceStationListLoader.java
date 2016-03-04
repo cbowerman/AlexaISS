@@ -15,11 +15,12 @@ class SpaceStationListLoader {
 	 * Load up State list
 	 */
 	List<KeyValuePair> loadStateInfo() {
+		
 		List<KeyValuePair> state_list = new ArrayList<KeyValuePair>();
 		
 		try {
 
-			InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/LIST_OF_STATES");
+			InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/states/STATE_LOOKUP");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
 			String sCurrentLine = "";
@@ -43,5 +44,40 @@ class SpaceStationListLoader {
 		}	
 		
 		return state_list;
+	}	
+	
+	/*
+	 * Load up Country list
+	 */
+	List<KeyValuePair> loadCountryInfo() {
+		
+		List<KeyValuePair> countryList = new ArrayList<KeyValuePair>();
+		
+		try {
+
+			InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/countries/COUNTRY_LOOKUP");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
+			String sCurrentLine = "";
+			while ((sCurrentLine = reader.readLine()) != null) {
+
+				String countryArray[] = sCurrentLine.split(",");
+				KeyValuePair pair = new KeyValuePair(countryArray[0], countryArray[1]);
+				countryList.add(pair);
+			}
+			
+			in.close();
+		}
+		catch (MalformedURLException muex) {
+			System.out.println("MalformedURLException" + muex.getMessage());
+		}
+		catch (IOException ioex) {
+			System.out.println("IOException" + ioex.getMessage());
+		}
+		catch (Exception ex) {
+			System.out.println("Exeption" + ex.getMessage());
+		}	
+		
+		return countryList;
 	}	
 }

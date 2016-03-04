@@ -79,8 +79,11 @@ private static final Logger log = LoggerFactory.getLogger(SpaceStationSpeechlet.
 
 private static final String SLOT_CITY = "City";
 private static final String SLOT_STATE = "State";
+private static final String SLOT_COUNTRY = "Country";
 private static final String SLOT_LETTER = "FirstLetter";
 
+private static final String COUNTRY_UNKNOWN = "COUNTRY_UNKNOWN";
+private static final String COUNTRY_LIST = "COUNTRY_LIST";
 private static final String STATE_UNKNOWN = "STATE_UNKNOWN";
 private static final String STATE_LIST = "STATE_LIST";
 private static final String CITY_UNKNOWN = "CITY_UNKNOWN";
@@ -89,6 +92,7 @@ private static final String CITY_LIST = "CITY_LIST";
 static SpaceStationListLoader ssListLoader = new SpaceStationListLoader();
 
 private static final List<KeyValuePair> STATE_LOOKUP = ssListLoader.loadStateInfo();
+private static final List<KeyValuePair> COUNTRY_LOOKUP = ssListLoader.loadCountryInfo();
 
 //@Override
 public void onSessionStarted(final SessionStartedRequest request, final Session session)
@@ -117,10 +121,14 @@ public SpeechletResponse onIntent(final IntentRequest request, final Session ses
     Intent intent = request.getIntent();
     String intentName = intent.getName();
 
-    if ("StateListIntent".equals(intentName)) {
+    if ("CountryListIntent".equals(intentName)) {
+    	return handleCountryListIntentRequest(intent, session); 
+    } else if ("StateListIntent".equals(intentName)) {
     	return handleStateListIntentRequest(intent, session);
     } else if ("CityListIntent".equals(intentName)) {
     	return handleCityListIntentRequest(intent, session);
+    } else if ("CountryLocationListIntent".equals(intentName)) {
+    	return handleCountryLocationListIntentRequest(intent, session);
     } else if ("CityStateIntent".equals(intentName)) {
     	return handleCityStateIntentRequest(intent, session);
     } else if ("AMAZON.HelpIntent".equals(intentName)) {
@@ -151,6 +159,16 @@ private SpeechletResponse handleStateListIntentRequest(final Intent intent, fina
     return handleStateList(intent, session, STATE_LIST);
 }
 
+
+/**
+ * Creates a {@code SpeechletResponse} for the CountryListIntent.
+ *
+ * @return SpeechletResponse spoken and visual response for the given intent
+ */
+private SpeechletResponse handleCountryListIntentRequest(final Intent intent, final Session session) {
+
+    return handleCountryList(intent, session, COUNTRY_LIST);
+}
 
 /**
  * Creates a {@code SpeechletResponse} for the CityListIntent.
@@ -190,6 +208,48 @@ private SpeechletResponse handleCityListIntentRequest(final Intent intent, final
 	}
 
 	return handleCityList(intent, session, CITY_LIST);
+}
+
+
+/**
+ * Creates a {@code SpeechletResponse} for the CityListIntent.
+ *
+ * @return SpeechletResponse spoken and visual response for the given intent
+ */
+private SpeechletResponse handleCountryLocationListIntentRequest(final Intent intent, final Session session) {
+	
+	Slot countrySlot = intent.getSlot(SLOT_COUNTRY);
+	Slot locationSlot = intent.getSlot(SLOT_CITY);
+	
+	if ((countrySlot == null || countrySlot.getValue() == null) && (locationSlot == null || locationSlot.getValue() == null)) {
+		
+		StringBuilder locationStrBldr = new StringBuilder();
+		
+		locationStrBldr.append("<speak>");
+		locationStrBldr.append("<p>To list locations a country is required.</p>");
+		locationStrBldr.append("<p>For a list of locations in a certain country say list locations in France or the name of another country.</p>");
+		locationStrBldr.append("<p>Shorten the list by saying list locations in France beginning with A or another letter.</p>");
+		locationStrBldr.append("</speak>");
+	    
+	    SsmlOutputSpeech ssmlspeech = new  SsmlOutputSpeech();
+	    ssmlspeech.setSsml(locationStrBldr.toString());
+	    
+	    StringBuilder rpStrBldr = new StringBuilder();
+		rpStrBldr.append("<speak>");
+		rpStrBldr.append("For a lists of countries say list countries starting with A or another letter.");
+		rpStrBldr.append("</speak>");
+
+	    SsmlOutputSpeech rpssmlspeech = new  SsmlOutputSpeech();
+	    rpssmlspeech.setSsml(rpStrBldr.toString());
+
+	    // Create reprompt
+	    Reprompt reprompt = new Reprompt();
+	    reprompt.setOutputSpeech(rpssmlspeech);	    
+	    
+	    return SpeechletResponse.newAskResponse(ssmlspeech, reprompt);
+	}
+
+	return handleCountryLocationList(intent, session, CITY_LIST);
 }
 
 
@@ -333,6 +393,145 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 }
 
 
+private SpeechletResponse handleCountryList(final Intent intent, final Session session, String option) {
+	
+	StringBuilder countryStrBldr = new StringBuilder();
+	StringBuilder cardStrBldr = new StringBuilder();
+
+	Slot letterSlot = intent.getSlot(SLOT_LETTER);
+	boolean shortList = true;
+	
+	if (letterSlot == null || letterSlot.getValue() == null) {
+		shortList = false;
+	}
+		
+	if (option.equals(STATE_UNKNOWN)) {
+
+		StringBuilder rpStrBldr = new StringBuilder();
+		
+		countryStrBldr.append("<speak>");
+		countryStrBldr.append("<p>The country you specified is unknown.</p>");
+		countryStrBldr.append("<p>For a full list of countries say list countries.</p>");
+		countryStrBldr.append("<p>Shorten the list by saying list countries starting with A or any other letter.</p>");
+		countryStrBldr.append("</speak>");
+		
+		rpStrBldr.append("<speak>");
+		rpStrBldr.append("For a lists of countries say list countries.");
+		rpStrBldr.append("</speak>");
+	    
+	    // Create the plain text output.
+	    SsmlOutputSpeech ssmlspeech = new  SsmlOutputSpeech();
+	    ssmlspeech.setSsml(countryStrBldr.toString());
+
+	    SsmlOutputSpeech rpssmlspeech = new  SsmlOutputSpeech();
+	    rpssmlspeech.setSsml(rpStrBldr.toString());
+
+	    // Create reprompt
+	    Reprompt reprompt = new Reprompt();
+	    reprompt.setOutputSpeech(rpssmlspeech);
+
+	    return SpeechletResponse.newAskResponse(ssmlspeech, reprompt);						
+		
+	}
+	else {
+		countryStrBldr.append("<speak>");
+		countryStrBldr.append("<p>Countries with sighting location information are:</p>");
+		cardStrBldr.append("Countries with sighting location information are:\n");		
+	}
+	
+	int counter = 0;
+	for(KeyValuePair item : COUNTRY_LOOKUP) {
+			
+		String key = item.getKey();
+		
+		if (shortList) {
+			
+			if (key.toLowerCase().charAt(0) == letterSlot.getValue().toLowerCase().charAt(0)) {
+				countryStrBldr.append("<s>" + key + "</s>");
+				cardStrBldr.append(key + "\n");
+				counter++;
+			}
+		}
+		else {
+			countryStrBldr.append("<s>" + key + "</s>");
+			cardStrBldr.append(key + "\n");
+			counter++;
+		}
+	}
+
+	if (counter == 0) {
+		
+		StringBuilder noStrBldr = new StringBuilder();
+		StringBuilder rpStrBldr = new StringBuilder();
+		
+		noStrBldr.append("<speak>");
+		noStrBldr.append("<p>There does not appear to be a country matching your criteria.</p>");
+		noStrBldr.append("<p>For a full list of countries say list countries.</p>");
+		noStrBldr.append("<p>Shorten the list by saying list countries starting with A or any other letter.</p>");
+		noStrBldr.append("</speak>");
+		
+		rpStrBldr.append("<speak>");
+		rpStrBldr.append("For a lists of countries say list countries.");
+		rpStrBldr.append("</speak>");
+	    
+	    // Create the plain text output.
+	    SsmlOutputSpeech ssmlspeech = new  SsmlOutputSpeech();
+	    ssmlspeech.setSsml(noStrBldr.toString());
+	    
+	    // Create reprompt
+	    SsmlOutputSpeech rpssmlspeech = new  SsmlOutputSpeech();
+	    rpssmlspeech.setSsml(rpStrBldr.toString());
+	    Reprompt reprompt = new Reprompt();
+	    reprompt.setOutputSpeech(rpssmlspeech);
+
+	    return SpeechletResponse.newAskResponse(ssmlspeech, reprompt);						
+	}
+	
+	
+	
+	countryStrBldr.append("<p>You can get a list locations with sighting information within a country by saying "
+			+ "list locations in France or the name of some other country.</p>");
+	countryStrBldr.append("<p>Shorten the list by saying list locations in France starting with A or another letter.</p>");
+	cardStrBldr.append("You can get a list locations with sighting information within a country by saying "
+			+ "list locations in France or the name of some other country.\n");		
+	cardStrBldr.append("Shorten the list by saying list locations in France beginning with A or another letter.\n");
+	
+	countryStrBldr.append("</speak>");
+    String speechText = countryStrBldr.toString();
+        
+    // Create the Simple card content.
+    SimpleCard card = new SimpleCard();
+    if (option.equals(COUNTRY_UNKNOWN)) {
+    	card.setTitle("ISS - Unknown Country");	
+    }
+    else {
+    	card.setTitle("ISS - Country Sighting List");    	
+    }
+    
+    card.setContent(cardStrBldr.toString());
+
+    // Create the text output.
+    SsmlOutputSpeech ssmlspeech = new  SsmlOutputSpeech();
+    ssmlspeech.setSsml(speechText);
+  
+    StringBuilder rpStrBldr = new StringBuilder();
+    rpStrBldr.append("<speak>");
+    rpStrBldr.append("<p>You can get a list locations with sighting information within a country by saying "
+			+ "list locations in France or the name of some other country.</p>");
+	rpStrBldr.append("<p>Shorten the list by saying list locations in France beginning with A or another letter.</p>");
+	rpStrBldr.append("</speak>");
+	
+    Reprompt reprompt = new Reprompt();
+    SsmlOutputSpeech rpSpeech = new  SsmlOutputSpeech();
+    rpSpeech.setSsml(rpStrBldr.toString());
+
+    reprompt.setOutputSpeech(rpSpeech);
+    
+    return SpeechletResponse.newAskResponse(ssmlspeech, reprompt, card);
+}
+
+
+
 private SpeechletResponse handleCityList(final Intent intent, final Session session, String option) {
 	
 	KeyValuePair statePair = null;
@@ -374,7 +573,7 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 	    	return handleStateList(intent, session, STATE_UNKNOWN);
 	    }
 	    
-		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/" + statePair.getValue());
+		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
 		if (option.equals(CITY_UNKNOWN)) {
@@ -507,6 +706,181 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
     return SpeechletResponse.newAskResponse(smlspeech, reprompt, card);
 }
 
+
+private SpeechletResponse handleCountryLocationList(final Intent intent, final Session session, String option) {
+	
+	KeyValuePair countryPair = null;
+	
+	StringBuilder locationStrBldr = new StringBuilder();
+	StringBuilder cardStrBldr = new StringBuilder();
+	
+	try {
+
+	    Slot countrySlot = intent.getSlot(SLOT_COUNTRY);
+	
+		Slot letterSlot = intent.getSlot(SLOT_LETTER);
+		boolean shortList = true;
+		
+		if (letterSlot == null || letterSlot.getValue() == null) {
+			shortList = false;
+		}	    
+	    
+	    String countryObject = null;
+
+	    if (countrySlot == null || countrySlot.getValue() == null) {
+	    
+	    	return handleCountryList(intent, session, COUNTRY_UNKNOWN);
+	    } else {
+	    	
+	        // lookup the country.
+	        countryObject = countrySlot.getValue().trim();
+	    }		
+		
+	    
+	    for (KeyValuePair item : COUNTRY_LOOKUP) {
+	    	if (item.getKey().toLowerCase().equals(countryObject.toLowerCase())) {
+	    		countryPair = item;
+	    	}
+	    }
+	    
+	    if ((countryPair == null) || (countryPair.getValue() == null) ) {
+	    
+	    	return handleCountryList(intent, session, COUNTRY_UNKNOWN);
+	    }
+	    
+		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/countries/" + countryPair.getValue());
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
+		if (option.equals(CITY_UNKNOWN)) {
+			
+			StringBuilder rpStrBldr = new StringBuilder();
+			
+			locationStrBldr.append("<speak>");
+			locationStrBldr.append("<p>The location you specified does not have sighting information available.</p>");
+			locationStrBldr.append("<p>For a listing of locations in " + countryPair.getKey() + " say list locations in " + countryPair.getKey() + ".</p>");
+			locationStrBldr.append("<p>Shorten the list by saying list locations in " + countryPair.getKey() + " starting with A or another letter.</p>");
+			locationStrBldr.append("</speak>");
+			
+			rpStrBldr.append("<speak>");
+			rpStrBldr.append("<p>For a listing of locations in " + countryPair.getKey() + " say list locations in " + countryPair.getKey() + ".</p>");
+			rpStrBldr.append("<p>Shorten the list by saying list locations in " + countryPair.getKey() + " starting with A or another letter.</p>");
+			rpStrBldr.append("</speak>");
+		    
+		    // Create the plain text output.
+		    SsmlOutputSpeech ssmlspeech = new  SsmlOutputSpeech();
+		    ssmlspeech.setSsml(locationStrBldr.toString());
+
+		    
+		    // Create reprompt
+		    SsmlOutputSpeech rpssmlspeech = new  SsmlOutputSpeech();
+		    rpssmlspeech.setSsml(rpStrBldr.toString());
+		    Reprompt reprompt = new Reprompt();
+		    reprompt.setOutputSpeech(rpssmlspeech);
+
+		    return SpeechletResponse.newAskResponse(ssmlspeech, reprompt);						
+			
+		}
+		else {
+			locationStrBldr.append("<speak>");
+			locationStrBldr.append("<p>Locations in " + countryPair.getKey() + " with sighting information are:</p>");
+			cardStrBldr.append("Locations in " + WordUtils.capitalizeFully(countryPair.getKey()) + " with sighting information are:\n");		
+		}		
+		
+		
+		String sCurrentLine = "";
+		int counter = 0;
+		while ((sCurrentLine = reader.readLine()) != null) {
+			String locationArray[] = sCurrentLine.split(",");
+			String location = locationArray[0];
+			
+			if (shortList) {
+				
+				if (location.toLowerCase().charAt(0) == letterSlot.getValue().toLowerCase().charAt(0)) {
+					locationStrBldr.append("<s>" + location + "</s>");
+					cardStrBldr.append(location + "\n");
+					counter++;
+				}
+			}
+			else {
+				locationStrBldr.append("<s>" + location + "</s>");
+				cardStrBldr.append(location + "\n");
+				counter++;
+			}					
+		}
+		
+		// Handle if no locations are returned.
+		if (counter == 0) {
+			
+			StringBuilder noStrBldr = new StringBuilder();
+			StringBuilder rpStrBldr = new StringBuilder();
+			
+			noStrBldr.append("<speak>");
+			noStrBldr.append("<p>There does not appear to be any locations matching your criteria.</p>");
+			noStrBldr.append("<p>For a listing of locations in " + countryPair.getKey() + " say list locations in " + countryPair.getKey() + ".</p>");
+			noStrBldr.append("<p>Shorten the list by saying list locations in " + countryPair.getKey() + " starting with A or another letter.</p>");
+			noStrBldr.append("</speak>");
+			
+			rpStrBldr.append("<speak>");
+			rpStrBldr.append("<p>For a listing of locations in " + countryPair.getKey() + " say list locations in " + countryPair.getKey() + ".</p>");
+			rpStrBldr.append("<p>Shorten the list by saying list locations in " + countryPair.getKey() + " starting with A or another letter.</p>");
+			rpStrBldr.append("</speak>");
+		    
+		    // Create the plain text output.
+		    SsmlOutputSpeech ssmlspeech = new  SsmlOutputSpeech();
+		    ssmlspeech.setSsml(noStrBldr.toString());
+		    
+		    // Create reprompt
+		    SsmlOutputSpeech rpssmlspeech = new  SsmlOutputSpeech();
+		    rpssmlspeech.setSsml(rpStrBldr.toString());
+		    Reprompt reprompt = new Reprompt();
+		    reprompt.setOutputSpeech(rpssmlspeech);
+
+		    return SpeechletResponse.newAskResponse(ssmlspeech, reprompt);						
+		}
+		
+		in.close();
+	}
+	catch (MalformedURLException muex) {
+		System.out.println("MalformedURLException" + muex.getMessage());
+	}
+	catch (IOException ioex) {
+		System.out.println("IOException" + ioex.getMessage());
+	}
+	catch (Exception ex) {
+		System.out.println("Exeption" + ex.getMessage());
+	}
+
+	locationStrBldr.append("<p>You can get sighting information for a location by saying "
+			+ "give me visibility for Paris France or some other location and country combination.</p>");
+	cardStrBldr.append("You can get sighting information for a location by saying "
+			+ "give me visibility for Paris France or some other location and country combination.\n");			
+	locationStrBldr.append("</speak>");
+        
+    // Create the Simple card content.
+    SimpleCard card = new SimpleCard();
+    card.setTitle("ISS - Location Listing: " + WordUtils.capitalizeFully(countryPair.getKey()));    	
+    
+    card.setContent(cardStrBldr.toString());
+
+    // Create the ssmloutput text output.
+    SsmlOutputSpeech ssmlspeech = new  SsmlOutputSpeech();
+    ssmlspeech.setSsml(locationStrBldr.toString());
+
+    StringBuilder rpStrBldr = new StringBuilder();
+	rpStrBldr.append("<speak>");
+	rpStrBldr.append("<p>You can get sighting information for a location by saying "
+			+ "give me visibility for Paris France or some other location and country combination.</p>");
+	rpStrBldr.append("</speak>");
+    
+    SsmlOutputSpeech rpssmlspeech = new  SsmlOutputSpeech();
+    rpssmlspeech.setSsml(rpStrBldr.toString());
+    
+    Reprompt reprompt = new Reprompt();
+    reprompt.setOutputSpeech(rpssmlspeech);
+    
+    return SpeechletResponse.newAskResponse(ssmlspeech, reprompt, card);
+}
+
 /**
  * Creates a {@code SpeechletResponse} for the OneshotCityIntent.
  *
@@ -579,7 +953,7 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 
 		}	    
 	    
-		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/customSlotTypes/" + statePair.getValue());
+		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
 		

@@ -1,6 +1,15 @@
 {
   "intents": [
     {
+      "intent": "CountryListIntent",
+      "slots": [
+        {
+          "name": "FirstLetter",
+          "type": "FirstLetter"
+        }
+      ]
+    },
+	{
       "intent": "StateListIntent",
       "slots": [
         {
@@ -15,6 +24,19 @@
         {
           "name": "State",
           "type": "State"
+        },
+        {
+          "name": "FirstLetter",
+          "type": "FirstLetter"
+        }
+      ]
+    },
+    {
+      "intent": "CountryLocationListIntent",
+      "slots": [
+        {
+          "name": "Country",
+          "type": "Country"
         },
         {
           "name": "FirstLetter",
