@@ -121,6 +121,8 @@ public SpeechletResponse onIntent(final IntentRequest request, final Session ses
     Intent intent = request.getIntent();
     String intentName = intent.getName();
 
+    log.info("Check intent");
+    
     if ("CountryListIntent".equals(intentName)) {
     	return handleCountryListIntentRequest(intent, session); 
     } else if ("StateListIntent".equals(intentName)) {
@@ -130,6 +132,7 @@ public SpeechletResponse onIntent(final IntentRequest request, final Session ses
     } else if ("CountryLocationListIntent".equals(intentName)) {
     	return handleCountryLocationListIntentRequest(intent, session);
     } else if ("CityStateIntent".equals(intentName)) {
+    	log.info("Need to handle city/state/country intent");
     	return handleCityStateIntentRequest(intent, session);
     } else if ("AMAZON.HelpIntent".equals(intentName)) {
         return handleHelpRequest();
@@ -144,6 +147,7 @@ public SpeechletResponse onIntent(final IntentRequest request, final Session ses
 
         return SpeechletResponse.newTellResponse(outputSpeech);
     } else {
+    	log.info("Throwing invalid Intent");
         throw new SpeechletException("Invalid Intent");
     }
 }
@@ -888,51 +892,125 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
  */
 private SpeechletResponse handleCityStateIntentRequest(final Intent intent, final Session session) {
 	
+	log.info("Entering handleCityStateIntentRequest");
+	
+	boolean hasCountry = false;
+	log.info("hasCountry is: " + hasCountry);
+	
     String cityObject = null;
     String stateObject = null;
+    String countryObject = null;
+    log.info("Init city/state/country Objects to null");
+    
 	StringBuilder issStrBldr = new StringBuilder();
 	StringBuilder issCrdBldr = new StringBuilder();
+	log.info("Init StringBuilders");
 	
 	try {
 
-		log.debug("Entering handleCityStateIntentRequest");
+		log.info("Begin try/catch");
+		
+		log.info("getSlots");
 		
 	    Slot citySlot = intent.getSlot(SLOT_CITY);
 	    Slot stateSlot = intent.getSlot(SLOT_STATE);
-	    KeyValuePair statePair = null;
-	    	    
-	    if (stateSlot == null || stateSlot.getValue() == null) {
-	    	
-	    	return handleStateList(intent, session, STATE_UNKNOWN);
-	    } else {
-	    	// lookup the city. Sample skill uses well known mapping of a few known cities to
-	    	// station id.
-	    	stateObject = stateSlot.getValue().trim();
-	    }		
+	    Slot countrySlot = intent.getSlot(SLOT_COUNTRY);
 	    
+	    log.info("Initialized city/state/country Slots");
+	    
+	    KeyValuePair statePair = null;
+	    
+	    log.info("Checking for a country.");
+	    
+	    if (countrySlot == null || countrySlot.getValue() == null) {
+	    	
+	    	log.info("country is null so US is default");
+	    	countryObject = "United States";
+	    }
+	    else {
+
+	    	countryObject = countrySlot.getValue().trim();
+	    	hasCountry = true;
+	    	log.info("country is not null: " + countryObject);
+	    }
+	    
+	    if (!(hasCountry)) {
+	    	
+	    	log.info("No country so checking state.");
+
+		    if (stateSlot == null || stateSlot.getValue() == null) {
+
+		    	log.info("State is null so need ot check what they want. calling handleState.");
+//@todo write method to phrase "need state or country"  
+		    	return handleStateList(intent, session, STATE_UNKNOWN);
+		    } else {
+
+		    	stateObject = stateSlot.getValue().trim();
+		    	log.info("There is a state: " + stateObject);
+		    }			    	
+	    	
+	    }
+	    else {
+	    	
+	    	log.info("Have country so setting stateObject to None.");
+	    	stateObject = "None";
+	    }
+	    
+	    log.info("Checking city");
 	    if (citySlot == null || citySlot.getValue() == null) {
-	    		
+	    	
+	    	log.info("City is null so calling handleCity");
+//@todo write methos to phrase need a city with either a state in US or a country	    	
 	    	return handleCityList(intent, session, CITY_UNKNOWN);
 	    } else {
 	        // lookup the city. Sample skill uses well known mapping of a few known cities to
 	        // station id.
 	        cityObject = citySlot.getValue().trim();
+	        log.info("There is a city: " + cityObject);
 	    }		
 	    
-	    for (KeyValuePair item : STATE_LOOKUP) {
-
-	    	if (item.getKey().toLowerCase().equals(stateObject.toLowerCase())) {
-	    		
-	    		statePair = item;
-	    	}
-	    }
 	    
-	    if ((statePair == null) || (statePair.getValue() == null) ) {
-		    
-	    	return handleStateList(intent, session, STATE_UNKNOWN);
-	    }
+        if (hasCountry) {
+
+        	log.info("Getting country lookup pair");
+    	    for (KeyValuePair item : COUNTRY_LOOKUP) {
+
+    	    	if (item.getKey().toLowerCase().equals(countryObject.toLowerCase())) {
+    	    		
+    	    		statePair = item;
+    	    		log.info("pair is: " + statePair.getKey() + ", " + statePair.getValue());
+    	    	}
+    	    }
+    	    
+    	    if ((statePair == null) || (statePair.getValue() == null) ) {
+
+    	    	log.info("Could not find the country in the lookup to get pair");
+    	    	return handleCountryList(intent, session, COUNTRY_UNKNOWN);
+    	    }    	    
+        	
+        }
+        else {
+
+        	log.info("Getting state lookup pair");
+    	    for (KeyValuePair item : STATE_LOOKUP) {
+
+    	    	if (item.getKey().toLowerCase().equals(stateObject.toLowerCase())) {
+    	    		
+    	    		statePair = item;
+    	    		log.info("pair is: " + statePair.getKey() + ", " + statePair.getValue());
+    	    	}
+    	    }
+    	    
+    	    if ((statePair == null) || (statePair.getValue() == null) ) {
+    		    
+    	    	log.info("Could not find the country in the lookup to get pair");
+    	    	return handleStateList(intent, session, STATE_UNKNOWN);
+    	    }    
+        }
+	    
 	    
 		if (statePair.getKey().equals("National Parks")) {
+			log.info("Dealing with National Parks");
 			issStrBldr.append("<speak>");
 			issStrBldr.append("<p>The International Space Station will next be visible from ");
 			issStrBldr.append(WordUtils.capitalizeFully(cityObject) + " on: </p>");
@@ -942,20 +1020,43 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 
 		} 
 		else {
+			log.info("No need for rewording for National Parks");
 			issStrBldr.append("<speak>");
 			issStrBldr.append("<p>The International Space Station will next be visible from ");
 			issStrBldr.append(WordUtils.capitalizeFully(cityObject));
-			issStrBldr.append(", " + stateObject + " on: </p>");
+			if (hasCountry) {
+				issStrBldr.append(", " + countryObject + " on: </p>");
+			}
+			else {
+				issStrBldr.append(", " + stateObject + " on: </p>");	
+			}
+			
 			
 			issCrdBldr.append("The International Space Station will next be visible from ");
 			issCrdBldr.append(WordUtils.capitalizeFully(cityObject));
-			issCrdBldr.append(", " + stateObject + " on: ");			
-
+			if (hasCountry) {
+				issCrdBldr.append(", " + countryObject + " on: ");
+			}
+			else {
+				issCrdBldr.append(", " + stateObject + " on: ");	
+			}
 		}	    
 	    
-		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
+		log.info("Preparing inputStream");
+		InputStream in = null;
+		if (hasCountry) {
+			in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/countries/" + statePair.getValue());
+			log.info("Got inputStream to: /com/cjbdev/echo/iss/speechAssets/countries/" + statePair.getValue());
+		}
+		else {
+			
+			in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
+			log.info("Got inputStream to: /com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
+		}
+
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
+		log.info("Created buffered reader");
 		
 		List<KeyValuePair> cityList = new ArrayList<KeyValuePair>();
 				
@@ -963,14 +1064,21 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 		while ((sCurrentLine = reader.readLine()) != null) {
 			String cityArray[] = sCurrentLine.split(",");
 			KeyValuePair cityItem = new KeyValuePair(cityArray[0], cityArray[1]);
+			log.info("Reading in city: " + cityItem.getKey() + ", " + cityItem.getValue());
 			cityList.add(cityItem);
 		}
 		
+		log.info("cityList created: " + cityList.size());
+		
 		KeyValuePair cityPair = null;
 		
+		log.info("Run through list to look for: " + cityObject);
+		
 	    for (KeyValuePair item : cityList) {
+	    	log.info("checking :" + cityObject + " against " + item.getKey());
 	    	if (item.getKey().toLowerCase().equals(cityObject.toLowerCase())) {
 	    		cityPair = item;
+	    		log.info("*************FOUND IT!! " + cityPair.getKey());
 	    	}
 	    }
 	    
@@ -1092,7 +1200,13 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
     
-    card.setTitle("ISS - Sighting Information: " + WordUtils.capitalizeFully(cityObject) + ", " + WordUtils.capitalizeFully(stateObject));
+    if (hasCountry) {
+    	card.setTitle("ISS - Sighting Information: " + WordUtils.capitalizeFully(cityObject) + ", " + WordUtils.capitalizeFully(countryObject));
+    }
+    else {
+    	card.setTitle("ISS - Sighting Information: " + WordUtils.capitalizeFully(cityObject) + ", " + WordUtils.capitalizeFully(stateObject));	
+    }
+    
     card.setContent(issCrdBldr.toString());
 
     // Create the plain text output.

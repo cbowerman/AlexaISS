@@ -295,29 +295,74 @@ CountryLocationListIntent places beginning with {FirstLetter}
 CountryLocationListIntent places starting with {FirstLetter}
 
 CityStateIntent when it is visible from {City} {State}
+CityStateIntent when it is visible from {City} {Country}
+CityStateIntent when it is visible from {City} state {State}
+CityStateIntent when it is visible from {City} country {Country}
 CityStateIntent when it is visible from {City} in {State}
+CityStateIntent when it is visible from {City} in {Country}
 CityStateIntent when it is visible from {City} in state {State}
+CityStateIntent when it is visible from {City} in country {Country}
 CityStateIntent visible from {City} {State}
+CityStateIntent visible from {City} {Country}
+CityStateIntent visible from {City} state {State}
+CityStateIntent visible from {City} country {Country}
 CityStateIntent visible from {City} in {State}
+CityStateIntent visible from {City} in {Country}
 CityStateIntent visible from {City} in state {State}
+CityStateIntent visible from {City} in county {Country}
 CityStateIntent visibility from {City} {State}
+CityStateIntent visibility from {City} {Country}
+CityStateIntent visibility from {City} state {State}
+CityStateIntent visibility from {City} country {Country}
 CityStateIntent visibility from {City} in {State}
-CityStateIntent visibliity from {City} in {State}
+CityStateIntent visibility from {City} in {Country}
+CityStateIntent visibility from {City} in state {State}
+CityStateIntent visibility from {City} in country {Country}
 CityStateIntent when it is visible in {City} {State}
+CityStateIntent when it is visible in {City} {Country}
+CityStateIntent when it is visible in {City} state {State}
+CityStateIntent when it is visible in {City} country {Country}
 CityStateIntent when it is visible in {City} in {State}
+CityStateIntent when it is visible in {City} in {Country}
 CityStateIntent when it is visible in {City} in state {State}
+CityStateIntent when it is visible in {City} in country {Country}
 CityStateIntent visible in {City} {State}
+CityStateIntent visible in {City} {Country}
+CityStateIntent visible in {City} state {State}
+CityStateIntent visible in {City} country {Country}
 CityStateIntent visible in {City} in {State}
+CityStateIntent visible in {City} in {Country}
 CityStateIntent visible in {City} in state {State}
+CityStateIntent visible in {City} in country {Country}
 CityStateIntent visibility in {City} {State}
+CityStateIntent visibility in {City} {Country}
 CityStateIntent visibility in {City} in {State}
-CityStateIntent visibliity in {City} in {State}
+CityStateIntent visibility in {City} in {Country}
 CityStateIntent tell me when it is visible from {City} {State}
+CityStateIntent tell me when it is visible from {City} {Country}
 CityStateIntent tell me when it is visible in {City} {State}
+CityStateIntent tell me when it is visible in {City} {Country}
 CityStateIntent tell me when I can see it from {City} {State}
+CityStateIntent tell me when I can see it from {City} {Country}
 CityStateIntent tell me when I can see it in {City} {State}
+CityStateIntent tell me when I can see it in {City} {Country}
 CityStateIntent give me visibility for {City} {State}
+CityStateIntent give me visibility for {City} {Country}
+CityStateIntent give me visibility for {City} state {State}
+CityStateIntent give me visibility for {City} country {Country}
 CityStateIntent give me visibility in {City} {State}
+CityStateIntent give me visibility in {City} {Country}
+CityStateIntent give me visibility in {City} state {State}
+CityStateIntent give me visibility in {City} country {Country}
 CityStateIntent give me a time when I can see it from {City} {State}
+CityStateIntent give me a time when I can see it from {City} {Country}
+CityStateIntent give me a time when I can see it from {City} state {State}
+CityStateIntent give me a time when I can see it from {City} country {Country}
 CityStateIntent give me a time when I can see it in {City} {State}
+CityStateIntent give me a time when I can see it in {City} {Country}
+CityStateIntent give me a time when I can see it in {City} state {State}
+CityStateIntent give me a time when I can see it in {City} country {Country}
 CityStateIntent {City} {State}
+CityStateIntent {City} {Country}
+CityStateIntent {City} state {State}
+CityStateIntent {City} country {Country}
