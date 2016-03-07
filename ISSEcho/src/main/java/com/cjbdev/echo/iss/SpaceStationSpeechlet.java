@@ -264,8 +264,11 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 	Slot letterSlot = intent.getSlot(SLOT_LETTER);
 	boolean shortList = true;
 	
+	log.debug("In handleStateList method");
+	
 	if (letterSlot == null || letterSlot.getValue() == null) {
 		shortList = false;
+		log.debug("setting shortList to false");
 	}
 		
 	if (option.equals(STATE_UNKNOWN)) {
@@ -299,16 +302,19 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 	else {
 		stateStrBldr.append("<speak>");
 		if (shortList) {
+			log.debug("speak text for shortList");
 			stateStrBldr.append("<p>States or regions starting with " + letterSlot.getValue().toUpperCase().charAt(0) + " that have sighting information are:</p>");
 			cardStrBldr.append("States or regions starting with \"" + letterSlot.getValue().toUpperCase().charAt(0) +"\" that have sighting information are:\n");					
 		}
 		else {
+			log.debug("speak text for full list");
 			stateStrBldr.append("<p>States or regions with sighting location information are:</p>");
 			cardStrBldr.append("States or regions with sighting location information are:\n");					
 		}
 	}
 	
 	int counter = 0;
+	log.debug("About to loop through STATE_LOOKUP");
 	for(KeyValuePair item : STATE_LOOKUP) {
 			
 		String key = item.getKey();
@@ -316,6 +322,7 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 		if (shortList) {
 			
 			if (key.toLowerCase().charAt(0) == letterSlot.getValue().toLowerCase().charAt(0)) {
+				log.debug("shortList hit: " + key);
 				stateStrBldr.append("<s>" + key + "</s>");
 				cardStrBldr.append(key + "\n");
 				counter++;
@@ -353,6 +360,7 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 	    Reprompt reprompt = new Reprompt();
 	    reprompt.setOutputSpeech(rpsmlspeech);
 
+	    log.debug("Exiting handleStateList");
 	    return SpeechletResponse.newAskResponse(smlspeech, reprompt);						
 	}
 	

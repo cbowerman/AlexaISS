@@ -35,9 +35,9 @@ static {
     supportedApplicationIds = new HashSet<String>();
     
     // dev version
-    supportedApplicationIds.add("amzn1.echo-sdk-ams.app.67c3d988-acea-404e-a206-d8ecb6823197");
+    //supportedApplicationIds.add("amzn1.echo-sdk-ams.app.67c3d988-acea-404e-a206-d8ecb6823197");
     // live (live/dev) version
-    //supportedApplicationIds.add("amzn1.echo-sdk-ams.app.39dab382-848d-4606-bce7-3228b11b9bcf");
+    supportedApplicationIds.add("amzn1.echo-sdk-ams.app.39dab382-848d-4606-bce7-3228b11b9bcf");
     
 }
 
