@@ -121,7 +121,7 @@ public SpeechletResponse onIntent(final IntentRequest request, final Session ses
     Intent intent = request.getIntent();
     String intentName = intent.getName();
 
-    log.info("Check intent");
+    log.debug("Check intent");
     
     if ("CountryListIntent".equals(intentName)) {
     	return handleCountryListIntentRequest(intent, session); 
@@ -132,7 +132,6 @@ public SpeechletResponse onIntent(final IntentRequest request, final Session ses
     } else if ("CountryLocationListIntent".equals(intentName)) {
     	return handleCountryLocationListIntentRequest(intent, session);
     } else if ("CityStateIntent".equals(intentName)) {
-    	log.info("Need to handle city/state/country intent");
     	return handleCityStateIntentRequest(intent, session);
     } else if ("AMAZON.HelpIntent".equals(intentName)) {
         return handleHelpRequest();
@@ -190,7 +189,7 @@ private SpeechletResponse handleCityListIntentRequest(final Intent intent, final
 		cityStrBldr.append("<speak>");
 		cityStrBldr.append("<p>To list locations a state or region is required.</p>");
 		cityStrBldr.append("<p>For a list of locations in a certain state say list locations in Maryland or the name of another state.</p>");
-		cityStrBldr.append("<p>Shorten the list by saying list locations in Maryland beginning with A or another letter.</p>");
+		cityStrBldr.append("<p>Shorten the list by saying list locations in Maryland starting with A or another letter.</p>");
 		cityStrBldr.append("</speak>");
 	    
 	    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
@@ -232,7 +231,7 @@ private SpeechletResponse handleCountryLocationListIntentRequest(final Intent in
 		locationStrBldr.append("<speak>");
 		locationStrBldr.append("<p>To list locations a country is required.</p>");
 		locationStrBldr.append("<p>For a list of locations in a certain country say list locations in France or the name of another country.</p>");
-		locationStrBldr.append("<p>Shorten the list by saying list locations in France beginning with A or another letter.</p>");
+		locationStrBldr.append("<p>Shorten the list by saying list locations in France starting with A or another letter.</p>");
 		locationStrBldr.append("</speak>");
 	    
 	    SsmlOutputSpeech ssmlspeech = new  SsmlOutputSpeech();
@@ -299,8 +298,14 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 	}
 	else {
 		stateStrBldr.append("<speak>");
-		stateStrBldr.append("<p>States or regions with sighting location information are:</p>");
-		cardStrBldr.append("States or regions with sighting location information are:\n");		
+		if (shortList) {
+			stateStrBldr.append("<p>States or regions starting with " + letterSlot.getValue().toUpperCase().charAt(0) + " that have sighting information are:</p>");
+			cardStrBldr.append("States or regions starting with \"" + letterSlot.getValue().toUpperCase().charAt(0) +"\" that have sighting information are:\n");					
+		}
+		else {
+			stateStrBldr.append("<p>States or regions with sighting location information are:</p>");
+			cardStrBldr.append("States or regions with sighting location information are:\n");					
+		}
 	}
 	
 	int counter = 0;
@@ -358,7 +363,7 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 	stateStrBldr.append("<p>Shorten the list by saying list locations in Maryland starting with A or another letter.</p>");
 	cardStrBldr.append("You can get a list locations with sighting information within a state by saying "
 			+ "list locations in Maryland or the name of some other state.\n");		
-	cardStrBldr.append("Shorten the list by saying list locations in Maryland beginning with A or another letter.\n");
+	cardStrBldr.append("Shorten the list by saying list locations in Maryland starting with A or another letter.\n");
 	
 	stateStrBldr.append("</speak>");
     String speechText = stateStrBldr.toString();
@@ -389,7 +394,7 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
     rpStrBldr.append("<speak>");
     rpStrBldr.append("<p>You can get a list locations with sighting information within a state by saying "
 			+ "list locations in Maryland or the name of some other state.</p>");
-	rpStrBldr.append("<p>Shorten the list by saying list locations in Maryland beginning with A or another letter.</p>");
+	rpStrBldr.append("<p>Shorten the list by saying list locations in Maryland starting with A or another letter.</p>");
 	rpStrBldr.append("</speak>");
 	
     Reprompt reprompt = new Reprompt();
@@ -444,8 +449,14 @@ private SpeechletResponse handleCountryList(final Intent intent, final Session s
 	}
 	else {
 		countryStrBldr.append("<speak>");
-		countryStrBldr.append("<p>Countries with sighting location information are:</p>");
-		cardStrBldr.append("Countries with sighting location information are:\n");		
+		if (shortList) {
+			countryStrBldr.append("<p>Countries starting with " + letterSlot.getValue().toUpperCase().charAt(0) + " that have sighting information are:</p>");
+			cardStrBldr.append("Countries starting with \"" + letterSlot.getValue().toUpperCase().charAt(0) + "\" that have sighting information are:\n");		
+		}
+		else {
+			countryStrBldr.append("<p>Countries with sighting location information are:</p>");
+			cardStrBldr.append("Countries with sighting location information are:\n");		
+		}
 	}
 	
 	int counter = 0;
@@ -503,7 +514,7 @@ private SpeechletResponse handleCountryList(final Intent intent, final Session s
 	countryStrBldr.append("<p>Shorten the list by saying list locations in France starting with A or another letter.</p>");
 	cardStrBldr.append("You can get a list locations with sighting information within a country by saying "
 			+ "list locations in France or the name of some other country.\n");		
-	cardStrBldr.append("Shorten the list by saying list locations in France beginning with A or another letter.\n");
+	cardStrBldr.append("Shorten the list by saying list locations in France starting with A or another letter.\n");
 	
 	countryStrBldr.append("</speak>");
     String speechText = countryStrBldr.toString();
@@ -532,7 +543,7 @@ private SpeechletResponse handleCountryList(final Intent intent, final Session s
     rpStrBldr.append("<speak>");
     rpStrBldr.append("<p>You can get a list locations with sighting information within a country by saying "
 			+ "list locations in France or the name of some other country.</p>");
-	rpStrBldr.append("<p>Shorten the list by saying list locations in France beginning with A or another letter.</p>");
+	rpStrBldr.append("<p>Shorten the list by saying list locations in France starting with A or another letter.</p>");
 	rpStrBldr.append("</speak>");
 	
     Reprompt reprompt = new Reprompt();
@@ -624,8 +635,15 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 		}
 		else {
 			cityStrBldr.append("<speak>");
-			cityStrBldr.append("<p>Locations in " + statePair.getKey() + " with sighting information are:</p>");
-			cardStrBldr.append("Locations in " + WordUtils.capitalizeFully(statePair.getKey()) + " with sighting information are:\n");		
+			
+			if (shortList) {
+				cityStrBldr.append("<p>Locations in " + statePair.getKey() + " starting with " + letterSlot.getValue().toUpperCase().charAt(0) + " that have sighting information are:</p>");
+				cardStrBldr.append("Locations in " + WordUtils.capitalizeFully(statePair.getKey()) + "starting with \"" + letterSlot.getValue().toUpperCase().charAt(0) + "\" that have sighting information are:\n");		
+			}
+			else {
+				cityStrBldr.append("<p>Locations in " + statePair.getKey() + " that have sighting information are:</p>");
+				cardStrBldr.append("Locations in " + WordUtils.capitalizeFully(statePair.getKey()) + " that have sighting information are:\n");						
+			}
 		}		
 		
 		
@@ -805,8 +823,16 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
 		}
 		else {
 			locationStrBldr.append("<speak>");
-			locationStrBldr.append("<p>Locations in " + countryPair.getKey() + " with sighting information are:</p>");
-			cardStrBldr.append("Locations in " + WordUtils.capitalizeFully(countryPair.getKey()) + " with sighting information are:\n");		
+
+			if (shortList) {
+				locationStrBldr.append("<p>Locations in " + countryPair.getKey() + " starting with " + letterSlot.getValue().toUpperCase().charAt(0) + " that have sighting information are:</p>");
+				cardStrBldr.append("Locations in " + WordUtils.capitalizeFully(countryPair.getKey()) + "starting with \"" + letterSlot.getValue().toUpperCase().charAt(0) + "\" that have sighting information are:\n");		
+			}
+			else {
+				locationStrBldr.append("<p>Locations in " + countryPair.getKey() + " that have sighting information are:</p>");
+				cardStrBldr.append("Locations in " + WordUtils.capitalizeFully(countryPair.getKey()) + " that have sighting information are:\n");						
+			}
+						
 		}		
 		
 		
@@ -918,125 +944,156 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
  */
 private SpeechletResponse handleCityStateIntentRequest(final Intent intent, final Session session) {
 	
-	log.info("Entering handleCityStateIntentRequest");
+	log.debug("Entering handleCityStateIntentRequest");
 	
 	boolean hasCountry = false;
-	log.info("hasCountry is: " + hasCountry);
+	log.debug("hasCountry is: " + hasCountry);
 	
     String cityObject = null;
     String stateObject = null;
     String countryObject = null;
-    log.info("Init city/state/country Objects to null");
+    log.debug("Init city/state/country Objects to null");
     
 	StringBuilder issStrBldr = new StringBuilder();
 	StringBuilder issCrdBldr = new StringBuilder();
-	log.info("Init StringBuilders");
+	log.debug("Init StringBuilders");
 	
 	try {
-
-		log.info("Begin try/catch");
 		
-		log.info("getSlots");
+		log.debug("getSlots");
 		
 	    Slot citySlot = intent.getSlot(SLOT_CITY);
 	    Slot stateSlot = intent.getSlot(SLOT_STATE);
 	    Slot countrySlot = intent.getSlot(SLOT_COUNTRY);
 	    
-	    log.info("Initialized city/state/country Slots");
+	    log.debug("Initialized city/state/country Slots");
 	    
 	    KeyValuePair statePair = null;
 	    
-	    log.info("Checking for a country.");
+	    log.debug("Checking for a country.");
 	    
 	    if (countrySlot == null || countrySlot.getValue() == null) {
 	    	
-	    	log.info("country is null so US is default");
+	    	log.debug("country is null so US is default");
 	    	countryObject = "United States";
 	    }
 	    else {
 
 	    	countryObject = countrySlot.getValue().trim();
 	    	hasCountry = true;
-	    	log.info("country is not null: " + countryObject);
+	    	log.debug("country is not null: " + countryObject);
 	    }
 	    
 	    if (!(hasCountry)) {
 	    	
-	    	log.info("No country so checking state.");
+	    	log.debug("No country so checking state.");
 
 		    if (stateSlot == null || stateSlot.getValue() == null) {
 
-		    	log.info("State is null so need ot check what they want. calling handleState.");
-//@todo write method to phrase "need state or country"  
-		    	return handleStateList(intent, session, STATE_UNKNOWN);
+		    	log.debug("No state or country.");
+
+				StringBuilder rpStrBldr = new StringBuilder();
+				
+				issStrBldr.append("<speak>");
+				issStrBldr.append("<p>You have not provided a state or country.</p>");
+				issStrBldr.append("<p>For a full list of states within the United States that have sighting information say list states.</p>");
+				issStrBldr.append("<p>Shorten the list by saying list states starting with A or any other letter.</p>");
+				issStrBldr.append("<p>For a full list of countries outside the United states that have sighting information say list countries.</p>");
+				issStrBldr.append("<p>Shorten the list by saying list countries starting with A or any other letter.</p>");
+				issStrBldr.append("</speak>");
+				
+				rpStrBldr.append("<speak>");
+				rpStrBldr.append("<p>For a lists of states say list states.</p>");
+				rpStrBldr.append("<p>For a lists of countries say list countries.</p>");
+				rpStrBldr.append("</speak>");
+			    
+			    // Create the plain text output.
+			    SsmlOutputSpeech ssmlspeech = new  SsmlOutputSpeech();
+			    ssmlspeech.setSsml(issStrBldr.toString());
+
+			    SsmlOutputSpeech rpssmlspeech = new  SsmlOutputSpeech();
+			    rpssmlspeech.setSsml(rpStrBldr.toString());
+
+			    // Create reprompt
+			    Reprompt reprompt = new Reprompt();
+			    reprompt.setOutputSpeech(rpssmlspeech);
+
+			    return SpeechletResponse.newAskResponse(ssmlspeech, reprompt);		    	
+		    	
 		    } else {
 
 		    	stateObject = stateSlot.getValue().trim();
-		    	log.info("There is a state: " + stateObject);
+		    	log.debug("There is a state: " + stateObject);
 		    }			    	
 	    	
 	    }
 	    else {
 	    	
-	    	log.info("Have country so setting stateObject to None.");
+	    	log.debug("Have country so setting stateObject to None.");
 	    	stateObject = "None";
 	    }
 	    
-	    log.info("Checking city");
+	    log.debug("Checking city");
 	    if (citySlot == null || citySlot.getValue() == null) {
 	    	
-	    	log.info("City is null so calling handleCity");
-//@todo write methos to phrase need a city with either a state in US or a country	    	
-	    	return handleCityList(intent, session, CITY_UNKNOWN);
+	    	log.debug("City is null so calling handleCity");
+
+	    	if (hasCountry) {
+	    		return handleCountryLocationList(intent, session, CITY_UNKNOWN);
+	    	}
+	    	else {
+	    		return handleCityList(intent, session, CITY_UNKNOWN);	
+	    	}
+	    	
 	    } else {
 	        // lookup the city. Sample skill uses well known mapping of a few known cities to
 	        // station id.
 	        cityObject = citySlot.getValue().trim();
-	        log.info("There is a city: " + cityObject);
+	        log.debug("There is a city: " + cityObject);
 	    }		
 	    
 	    
         if (hasCountry) {
 
-        	log.info("Getting country lookup pair");
+        	log.debug("Getting country lookup pair");
     	    for (KeyValuePair item : COUNTRY_LOOKUP) {
 
     	    	if (item.getKey().toLowerCase().equals(countryObject.toLowerCase())) {
     	    		
     	    		statePair = item;
-    	    		log.info("pair is: " + statePair.getKey() + ", " + statePair.getValue());
+    	    		log.debug("pair is: " + statePair.getKey() + ", " + statePair.getValue());
     	    	}
     	    }
     	    
     	    if ((statePair == null) || (statePair.getValue() == null) ) {
 
-    	    	log.info("Could not find the country in the lookup to get pair");
+    	    	log.debug("Could not find the country in the lookup to get pair");
     	    	return handleCountryList(intent, session, COUNTRY_UNKNOWN);
     	    }    	    
         	
         }
         else {
 
-        	log.info("Getting state lookup pair");
+        	log.debug("Getting state lookup pair");
     	    for (KeyValuePair item : STATE_LOOKUP) {
 
     	    	if (item.getKey().toLowerCase().equals(stateObject.toLowerCase())) {
     	    		
     	    		statePair = item;
-    	    		log.info("pair is: " + statePair.getKey() + ", " + statePair.getValue());
+    	    		log.debug("pair is: " + statePair.getKey() + ", " + statePair.getValue());
     	    	}
     	    }
     	    
     	    if ((statePair == null) || (statePair.getValue() == null) ) {
     		    
-    	    	log.info("Could not find the country in the lookup to get pair");
+    	    	log.debug("Could not find the country in the lookup to get pair");
     	    	return handleStateList(intent, session, STATE_UNKNOWN);
     	    }    
         }
 	    
 	    
 		if (statePair.getKey().equals("National Parks")) {
-			log.info("Dealing with National Parks");
+			log.debug("Dealing with National Parks");
 			issStrBldr.append("<speak>");
 			issStrBldr.append("<p>The International Space Station will next be visible from ");
 			issStrBldr.append(WordUtils.capitalizeFully(cityObject) + " on: </p>");
@@ -1046,7 +1103,7 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 
 		} 
 		else {
-			log.info("No need for rewording for National Parks");
+			log.debug("No need for rewording for National Parks");
 			issStrBldr.append("<speak>");
 			issStrBldr.append("<p>The International Space Station will next be visible from ");
 			issStrBldr.append(WordUtils.capitalizeFully(cityObject));
@@ -1068,21 +1125,21 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 			}
 		}	    
 	    
-		log.info("Preparing inputStream");
+		log.debug("Preparing inputStream");
 		InputStream in = null;
 		if (hasCountry) {
 			in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/countries/" + statePair.getValue());
-			log.info("Got inputStream to: /com/cjbdev/echo/iss/speechAssets/countries/" + statePair.getValue());
+			log.debug("Got inputStream to: /com/cjbdev/echo/iss/speechAssets/countries/" + statePair.getValue());
 		}
 		else {
 			
 			in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
-			log.info("Got inputStream to: /com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
+			log.debug("Got inputStream to: /com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
 		}
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
-		log.info("Created buffered reader");
+		log.debug("Created buffered reader");
 		
 		List<KeyValuePair> cityList = new ArrayList<KeyValuePair>();
 				
@@ -1090,21 +1147,21 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 		while ((sCurrentLine = reader.readLine()) != null) {
 			String cityArray[] = sCurrentLine.split(",");
 			KeyValuePair cityItem = new KeyValuePair(cityArray[0], cityArray[1]);
-			log.info("Reading in city: " + cityItem.getKey() + ", " + cityItem.getValue());
+			log.debug("Reading in city: " + cityItem.getKey() + ", " + cityItem.getValue());
 			cityList.add(cityItem);
 		}
 		
-		log.info("cityList created: " + cityList.size());
+		log.debug("cityList created: " + cityList.size());
 		
 		KeyValuePair cityPair = null;
 		
-		log.info("Run through list to look for: " + cityObject);
+		log.debug("Run through list to look for: " + cityObject);
 		
 	    for (KeyValuePair item : cityList) {
-	    	log.info("checking :" + cityObject + " against " + item.getKey());
+	    	log.debug("checking :" + cityObject + " against " + item.getKey());
 	    	if (item.getKey().toLowerCase().equals(cityObject.toLowerCase())) {
 	    		cityPair = item;
-	    		log.info("*************FOUND IT!! " + cityPair.getKey());
+	    		log.debug("*************FOUND IT!! " + cityPair.getKey());
 	    	}
 	    }
 	    
