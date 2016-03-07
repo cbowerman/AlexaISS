@@ -369,7 +369,12 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
     	card.setTitle("ISS - Unknown State");	
     }
     else {
-    	card.setTitle("ISS - State/Region Sighting List");    	
+    	if (shortList) {
+    		card.setTitle("ISS - State/Region starting with \"" + letterSlot.getValue().toUpperCase().charAt(0) + "\"");
+    	}
+    	else {
+    		card.setTitle("ISS - State/Region List");
+    	}
     }
     
     card.setContent(cardStrBldr.toString());
@@ -509,7 +514,12 @@ private SpeechletResponse handleCountryList(final Intent intent, final Session s
     	card.setTitle("ISS - Unknown Country");	
     }
     else {
-    	card.setTitle("ISS - Country Sighting List");    	
+    	if (shortList) {
+    		card.setTitle("ISS - Countries starting with \"" + letterSlot.getValue().toUpperCase().charAt(0) + "\"");
+    	}
+    	else {
+    		card.setTitle("ISS - Country List");
+    	}
     }
     
     card.setContent(cardStrBldr.toString());
@@ -537,7 +547,10 @@ private SpeechletResponse handleCountryList(final Intent intent, final Session s
 
 
 private SpeechletResponse handleCityList(final Intent intent, final Session session, String option) {
-	
+
+	boolean shortList = true;
+	Slot stateSlot = null;
+	Slot letterSlot = null;
 	KeyValuePair statePair = null;
 	
 	StringBuilder cityStrBldr = new StringBuilder();
@@ -545,10 +558,10 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 	
 	try {
 
-	    Slot stateSlot = intent.getSlot(SLOT_STATE);
+	    stateSlot = intent.getSlot(SLOT_STATE);
 	
-		Slot letterSlot = intent.getSlot(SLOT_LETTER);
-		boolean shortList = true;
+		letterSlot = intent.getSlot(SLOT_LETTER);
+		
 		
 		if (letterSlot == null || letterSlot.getValue() == null) {
 			shortList = false;
@@ -687,7 +700,12 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
         
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
-    card.setTitle("ISS - Location Listing: " + WordUtils.capitalizeFully(statePair.getKey()));    	
+    if (shortList) {
+    	card.setTitle("ISS - Location Listing: " + WordUtils.capitalizeFully(statePair.getKey()) + " starting with \"" + letterSlot.getValue().toUpperCase().charAt(0) + "\"");
+    }
+    else {
+    	card.setTitle("ISS - Location Listing: " + WordUtils.capitalizeFully(statePair.getKey()));
+    }
     
     card.setContent(cardStrBldr.toString());
 
@@ -713,6 +731,9 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 
 private SpeechletResponse handleCountryLocationList(final Intent intent, final Session session, String option) {
 	
+	boolean shortList = true;
+    Slot countrySlot = null;
+	Slot letterSlot = null;
 	KeyValuePair countryPair = null;
 	
 	StringBuilder locationStrBldr = new StringBuilder();
@@ -720,10 +741,8 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
 	
 	try {
 
-	    Slot countrySlot = intent.getSlot(SLOT_COUNTRY);
-	
-		Slot letterSlot = intent.getSlot(SLOT_LETTER);
-		boolean shortList = true;
+	    countrySlot = intent.getSlot(SLOT_COUNTRY);
+		letterSlot = intent.getSlot(SLOT_LETTER);
 		
 		if (letterSlot == null || letterSlot.getValue() == null) {
 			shortList = false;
@@ -862,7 +881,14 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
         
     // Create the Simple card content.
     SimpleCard card = new SimpleCard();
-    card.setTitle("ISS - Location Listing: " + WordUtils.capitalizeFully(countryPair.getKey()));    	
+    
+    if (shortList) {
+    	card.setTitle("ISS - Location Listing: " + WordUtils.capitalizeFully(countryPair.getKey()) + " starting with \"" + letterSlot.getValue().toUpperCase().charAt(0) + "\"");
+    }
+    else {
+    	card.setTitle("ISS - Location Listing: " + WordUtils.capitalizeFully(countryPair.getKey()));	
+    }
+        	
     
     card.setContent(cardStrBldr.toString());
 
