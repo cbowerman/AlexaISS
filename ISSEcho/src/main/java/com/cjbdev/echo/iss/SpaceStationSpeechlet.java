@@ -230,8 +230,8 @@ private SpeechletResponse handleCountryLocationListIntentRequest(final Intent in
 		
 		locationStrBldr.append("<speak>");
 		locationStrBldr.append("<p>To list locations a country is required.</p>");
-		locationStrBldr.append("<p>For a list of locations in a certain country say list locations in France or the name of another country.</p>");
-		locationStrBldr.append("<p>Shorten the list by saying list locations in France starting with A or another letter.</p>");
+		locationStrBldr.append("<p>For a list of locations in a certain country say list locations in England or the name of another country.</p>");
+		locationStrBldr.append("<p>Shorten the list by saying list locations in England starting with A or another letter.</p>");
 		locationStrBldr.append("</speak>");
 	    
 	    SsmlOutputSpeech ssmlspeech = new  SsmlOutputSpeech();
@@ -510,11 +510,11 @@ private SpeechletResponse handleCountryList(final Intent intent, final Session s
 	
 	
 	countryStrBldr.append("<p>You can get a list locations with sighting information within a country by saying "
-			+ "list locations in France or the name of some other country.</p>");
-	countryStrBldr.append("<p>Shorten the list by saying list locations in France starting with A or another letter.</p>");
+			+ "list locations in England or the name of some other country.</p>");
+	countryStrBldr.append("<p>Shorten the list by saying list locations in England starting with A or another letter.</p>");
 	cardStrBldr.append("You can get a list locations with sighting information within a country by saying "
-			+ "list locations in France or the name of some other country.\n");		
-	cardStrBldr.append("Shorten the list by saying list locations in France starting with A or another letter.\n");
+			+ "list locations in England or the name of some other country.\n");		
+	cardStrBldr.append("Shorten the list by saying list locations in England starting with A or another letter.\n");
 	
 	countryStrBldr.append("</speak>");
     String speechText = countryStrBldr.toString();
@@ -542,8 +542,8 @@ private SpeechletResponse handleCountryList(final Intent intent, final Session s
     StringBuilder rpStrBldr = new StringBuilder();
     rpStrBldr.append("<speak>");
     rpStrBldr.append("<p>You can get a list locations with sighting information within a country by saying "
-			+ "list locations in France or the name of some other country.</p>");
-	rpStrBldr.append("<p>Shorten the list by saying list locations in France starting with A or another letter.</p>");
+			+ "list locations in England or the name of some other country.</p>");
+	rpStrBldr.append("<p>Shorten the list by saying list locations in England starting with A or another letter.</p>");
 	rpStrBldr.append("</speak>");
 	
     Reprompt reprompt = new Reprompt();
@@ -900,9 +900,9 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
 	}
 
 	locationStrBldr.append("<p>You can get sighting information for a location by saying "
-			+ "give me visibility for Paris France or some other location and country combination.</p>");
+			+ "give me visibility for London England or some other location and country combination.</p>");
 	cardStrBldr.append("You can get sighting information for a location by saying "
-			+ "give me visibility for Paris France or some other location and country combination.\n");			
+			+ "give me visibility for London England or some other location and country combination.\n");			
 	locationStrBldr.append("</speak>");
         
     // Create the Simple card content.
@@ -925,7 +925,7 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
     StringBuilder rpStrBldr = new StringBuilder();
 	rpStrBldr.append("<speak>");
 	rpStrBldr.append("<p>You can get sighting information for a location by saying "
-			+ "give me visibility for Paris France or some other location and country combination.</p>");
+			+ "give me visibility for London or some other location and country combination.</p>");
 	rpStrBldr.append("</speak>");
     
     SsmlOutputSpeech rpssmlspeech = new  SsmlOutputSpeech();
@@ -1415,17 +1415,22 @@ private SpeechletResponse getWelcomeResponse() {
 	
 	welStrBldr.append("<speak>");
 	welStrBldr.append("<p>Welcome to the International Space Station Sighter.</p>");
-	welStrBldr.append("<p>I provide sighting information for the International Space Station from certain locations in the United States.</p>");
+	welStrBldr.append("<p>I provide sighting information for the International Space Station from certain locations around the world.</p>");
 	welStrBldr.append("<p>The space station is visible to the naked eye and is the third brightest object in the sky.</p>");
 	welStrBldr.append("<p>It looks like a fast-moving plane and is easy to spot if you know when and where to look up.</p>");
-	welStrBldr.append("<p>You can get sighting information by saying give me visibilty from Gaithersburg Maryland or another location and state.</p>");
+	welStrBldr.append("<p>You can get sighting information for locations by saying give me visibilty from Gaithersburg Maryland or another location and state combination.</p>");
 	welStrBldr.append("<p>I can list the locations in a state by saying list locations in Maryland or the name of another state.</p>");
 	welStrBldr.append("<p>Shorten the list by saying list locations in Maryland starting with A or another letter.</p>");
+	welStrBldr.append("<p>For locations outside of the United States saying give me visibility from London England or some other location and country combination.</p>");
+	welStrBldr.append("<p>I can list the locations in a country by saying list locations in England or the name of another country.</p>");
+	welStrBldr.append("<p>Shorten the list by saying list locations in England starting with A or another letter.</p>");
+	welStrBldr.append("<p>For a list of countries with sighting locations say list countries starting with A or another letter.</p>");
 	welStrBldr.append("<p>What would you like to do?</p>");
     welStrBldr.append("</speak>");
 	
 	rpStrBldr.append("<speak>");	
 	rpStrBldr.append("For a listing of locations in a state say list locations in Maryland or the name of another state.");
+	rpStrBldr.append("<p>Or for outside the United States try saying list locations in England or the name of another country.</p>");
 	rpStrBldr.append("</speak>");
 	
     // Create the ssmloutput text output.
@@ -1453,17 +1458,23 @@ private SpeechletResponse handleHelpRequest() {
 	StringBuilder rpStrBldr = new StringBuilder();
 
 	helpStrBldr.append("<speak>");
-	helpStrBldr.append("<p>I provide sighting information for the International Space Station from specific locations in the United States.</p>");
+	helpStrBldr.append("<p>I provide sighting information for the International Space Station from specific locations around the world.</p>");
 	helpStrBldr.append("<p>The space station is visible for at least a 50 mile (80 km) radius around available location.</p>");
 	helpStrBldr.append("<p>If your specific location is not available then pick the closest location to you.</p>");
+	helpStrBldr.append("<p>Locations outside of the United States may be more limited.</p>");
+	helpStrBldr.append("<p>You can get sighting information by saying give me visibility from Gaithersburg Maryland or another location and state combination.</p>");
 	helpStrBldr.append("<p>You can get a list of locations in a state by saying list locations in Maryland or another state.</p>");
 	helpStrBldr.append("<p>Shorten the list by saying list locations in Maryland starting with A or another letter.</p>");
-	helpStrBldr.append("<p>Or you can get sighting information by saying give me visibility from Gaithersburg Maryland or another location and state combination.</p>");
+	helpStrBldr.append("<p>For locations outside of the United States say give me visibility from London England or some other location and country combination.</p>");
+	helpStrBldr.append("<p>List the locations in a country by saying list locations in England or the name of another country.</p>");
+	helpStrBldr.append("<p>Shorten the list by saying list locations in England starting with A or another letter.</p>");
+	helpStrBldr.append("<p>For a list of countries with sighting locations say list countries starting with A or another letter.</p>");
 	helpStrBldr.append("<p>What would you like to do?</p>");
 	helpStrBldr.append("</speak>");
 	
 	rpStrBldr.append("<speak>");
 	rpStrBldr.append("<p>For a listing of locations in a state say list locations in Maryland or the name of another state.</p>");
+	rpStrBldr.append("<p>Or for outside the United States try saying list locations in England or the name of another country.</p>");
 	rpStrBldr.append("</speak>");
 	
     // Create the ssmloutput text output.
