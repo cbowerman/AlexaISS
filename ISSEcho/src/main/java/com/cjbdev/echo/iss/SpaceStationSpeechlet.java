@@ -609,9 +609,6 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 	    	return handleStateList(intent, session, STATE_UNKNOWN);
 	    }
 	    
-		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
 		if (option.equals(CITY_UNKNOWN)) {
 			
 			StringBuilder rpStrBldr = new StringBuilder();
@@ -630,7 +627,6 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 		    // Create the plain text output.
 		    SsmlOutputSpeech smlspeech = new  SsmlOutputSpeech();
 		    smlspeech.setSsml(cityStrBldr.toString());
-
 		    
 		    // Create reprompt
 		    SsmlOutputSpeech rpsmlspeech = new  SsmlOutputSpeech();
@@ -654,6 +650,8 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 			}
 		}		
 		
+		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		
 		String sCurrentLine = "";
 		int counter = 0;
@@ -675,6 +673,8 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 				counter++;
 			}					
 		}
+
+		in.close();
 		
 		// Handle if no locations are returned.
 		if (counter == 0) {
@@ -706,7 +706,6 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 		    return SpeechletResponse.newAskResponse(smlspeech, reprompt);						
 		}
 		
-		in.close();
 	}
 	catch (MalformedURLException muex) {
 		System.out.println("MalformedURLException" + muex.getMessage());
@@ -797,9 +796,6 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
 	    	return handleCountryList(intent, session, COUNTRY_UNKNOWN);
 	    }
 	    
-		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/countries/" + countryPair.getValue());
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
 		if (option.equals(CITY_UNKNOWN)) {
 			
 			StringBuilder rpStrBldr = new StringBuilder();
@@ -843,6 +839,8 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
 						
 		}		
 		
+		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/countries/" + countryPair.getValue());
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		
 		String sCurrentLine = "";
 		int counter = 0;
@@ -864,6 +862,8 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
 				counter++;
 			}					
 		}
+		
+		in.close();
 		
 		// Handle if no locations are returned.
 		if (counter == 0) {
@@ -893,9 +893,7 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
 		    reprompt.setOutputSpeech(rpssmlspeech);
 
 		    return SpeechletResponse.newAskResponse(ssmlspeech, reprompt);						
-		}
-		
-		in.close();
+		}	
 	}
 	catch (MalformedURLException muex) {
 		System.out.println("MalformedURLException" + muex.getMessage());
@@ -923,7 +921,6 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
     	card.setTitle("ISS - Location Listing: " + WordUtils.capitalizeFully(countryPair.getKey()));	
     }
         	
-    
     card.setContent(cardStrBldr.toString());
 
     // Create the ssmloutput text output.
@@ -1187,6 +1184,60 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 		SyndFeedInput input = new SyndFeedInput();
 		SyndFeed feed = input.build(new XmlReader(httpcon));
 		List<SyndEntry> entries = feed.getEntries();
+		
+		
+		if (entries.isEmpty()) {
+			
+			in.close();
+
+			StringBuilder ndStrBldr = new StringBuilder();
+			StringBuilder ndCrdBldr = new StringBuilder();
+			
+			ndStrBldr.append("<speak>");
+			ndStrBldr.append("<p>There are no sightings for ");
+			ndStrBldr.append(WordUtils.capitalizeFully(cityObject));
+			if (hasCountry) {
+				ndStrBldr.append(", " + countryObject);
+			}
+			else {
+				ndStrBldr.append(", " + stateObject);	
+			}
+			ndStrBldr.append(" during the current two week period.</p>");
+			ndStrBldr.append("<p>The data lists of space station sightings are updated multiple times a week.</p>");
+			ndStrBldr.append("<p>Please check back in a few days to see if there are any upcoming sighting events for your area.</p>");
+			ndStrBldr.append("</speak>");
+			
+			ndCrdBldr.append("There are no sightings for ");
+			ndCrdBldr.append(WordUtils.capitalizeFully(cityObject));
+			if (hasCountry) {
+				ndCrdBldr.append(", " + countryObject);
+			}
+			else {
+				ndCrdBldr.append(", " + stateObject);	
+			}
+			ndCrdBldr.append(" during the current two week period. ");
+			ndCrdBldr.append("The data lists of space station sightings are updated multiple times a week.");
+			ndCrdBldr.append("Please check back in a few days to see if there are any upcoming sighting events for your area. ");
+		    
+		    // Create the plain text output.
+		    SsmlOutputSpeech ssmlspeech = new  SsmlOutputSpeech();
+		    ssmlspeech.setSsml(ndStrBldr.toString());
+
+		    // Create the Simple card content.
+		    SimpleCard card = new SimpleCard();
+		    
+		    if (hasCountry) {
+		    	card.setTitle("ISS - Sighting Information: " + WordUtils.capitalizeFully(cityObject) + ", " + WordUtils.capitalizeFully(countryObject));
+		    }
+		    else {
+		    	card.setTitle("ISS - Sighting Information: " + WordUtils.capitalizeFully(cityObject) + ", " + WordUtils.capitalizeFully(stateObject));	
+		    }	
+		        	
+		    card.setContent(ndCrdBldr.toString());
+		    
+		    return SpeechletResponse.newTellResponse(ssmlspeech, card);		    	
+		}
+		
 		Iterator<SyndEntry> itEntries = entries.iterator();
 		
 		boolean first = true;
@@ -1218,10 +1269,8 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 				firstDescMod = descStrMod;
 				firstSightDate = sightDate;
 				first = false;
-			}
-			
+			}	
 		}	
-		
 		
 		firstDesc = firstDesc.replaceAll("\t", "");
 		firstDesc = firstDesc.replaceAll("\n", "");
