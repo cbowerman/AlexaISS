@@ -11,6 +11,7 @@ or in the "license" file accompanying this file. This file is distributed on an 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
 
 import com.amazon.speech.slu.Intent;
 import com.amazon.speech.slu.Slot;
@@ -34,6 +35,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -76,6 +78,7 @@ import org.apache.commons.lang3.text.WordUtils;
 public class SpaceStationSpeechlet implements Speechlet {
 	
 private static final Logger log = LoggerFactory.getLogger(SpaceStationSpeechlet.class);
+
 
 private static final String SLOT_CITY = "City";
 private static final String SLOT_STATE = "State";
@@ -1176,17 +1179,25 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 	    }
 		
 		log.info("Retrieving data for: " + cityPair.getValue());
+		System.out.println("Retrieving data for: " + cityPair.getValue());
 	    
 		URL url = new URL("http://spotthestation.nasa.gov/sightings/xml_files/" + cityPair.getValue() + ".xml");
-		HttpURLConnection httpcon = (HttpURLConnection)url.openConnection();
 
-		// Reading the feed
+		HttpURLConnection httpcon = (HttpURLConnection)url.openConnection();
 		SyndFeedInput input = new SyndFeedInput();
-		SyndFeed feed = input.build(new XmlReader(httpcon));
+		System.out.println("Created input");
+		input.setXmlHealerOn(false);
+		input.setAllowDoctypes(true);
+		XmlReader xmlreader = new XmlReader(httpcon);
+		SyndFeed feed = input.build(xmlreader);
+		System.out.println("Received feed");
+		
 		List<SyndEntry> entries = feed.getEntries();
+		System.out.println("Got Entries");
 		
 		
 		if (entries.isEmpty()) {
+			System.out.println("Entries is empty");
 			
 			in.close();
 
@@ -1245,11 +1256,14 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 		String firstDescMod = "";
 		String firstSightDate = "";
 
+		System.out.println("About to iterate entries");
 		while (itEntries.hasNext()) {
 			SyndEntry entry = itEntries.next();
 			SyndContent desc = entry.getDescription();
+			System.out.println("Got description");
 			String descStr = desc.getValue();
 			String descStrMod = descStr.replaceAll("<br/>", "");
+			System.out.println("Replaced breaks");
 			
 			String durationSplitArray[] = descStrMod.split("Duration");
 			String dateTimeStr = durationSplitArray[0];
@@ -1317,7 +1331,7 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 				sightLine.append("<p>" + sStr[0] + "above " + dirStr + "</p>");
 			}
 		}
-		
+		System.out.println("Done iterating.");
 		
 		issStrBldr.append(sightLine.toString());
 		issStrBldr.append("</speak>");
