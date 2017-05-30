@@ -1,0 +1,74 @@
+{
+  "intents": [
+    {
+      "intent": "CountryListIntent",
+      "slots": [
+        {
+          "name": "FirstLetter",
+          "type": "FirstLetter"
+        }
+      ]
+    },
+	{
+      "intent": "StateListIntent",
+      "slots": [
+        {
+          "name": "FirstLetter",
+          "type": "FirstLetter"
+        }
+      ]
+    },
+    {
+      "intent": "CityListIntent",
+      "slots": [
+        {
+          "name": "State",
+          "type": "State"
+        },
+        {
+          "name": "FirstLetter",
+          "type": "FirstLetter"
+        }
+      ]
+    },
+    {
+      "intent": "CountryLocationListIntent",
+      "slots": [
+        {
+          "name": "Country",
+          "type": "Country"
+        },
+        {
+          "name": "FirstLetter",
+          "type": "FirstLetter"
+        }
+      ]
+    },
+    {
+      "intent": "CityStateIntent",
+      "slots": [
+        {
+          "name": "City",
+          "type": "City"
+        },
+        {
+          "name": "State",
+          "type": "State"
+        },
+        {
+          "name": "Country",
+          "type": "Country"
+        }
+      ]
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}
