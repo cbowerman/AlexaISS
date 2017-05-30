@@ -19,35 +19,36 @@ import com.amazon.speech.speechlet.lambda.SpeechletRequestStreamHandler;
 /**
 * This class could be the handler for an AWS Lambda function powering an Alexa Skills Kit
 * experience. To do this, simply set the handler field in the AWS Lambda console to
-* "tidepooler.TidePoolerSpeechletRequestStreamHandler" For this to work, you'll also need to build
+* "com.cjbdev.echo.iss.SpaceStationSpeechletRequestStreamHandler" For this to work, you'll also need to build
 * this project using the {@code lambda-compile} Ant task and upload the resulting zip file to power
 * your function.
 */
 public class SpaceStationSpeechletRequestStreamHandler extends SpeechletRequestStreamHandler {
 
-private static final Set<String> supportedApplicationIds;
+  private static final Set<String> supportedApplicationIds;
 
-static {
+  static {
     /*
      * This Id can be found on https://developer.amazon.com/edw/home.html#/ "Edit" the relevant
      * Alexa Skill and put the relevant Application Ids in this Set.
      */
     supportedApplicationIds = new HashSet<String>();
     
-    // dev version
+    // development version
     //supportedApplicationIds.add("amzn1.echo-sdk-ams.app.67c3d988-acea-404e-a206-d8ecb6823197");
-    // live (live/dev) version
+    
+    // Production (Live/Dev) version
     supportedApplicationIds.add("amzn1.echo-sdk-ams.app.39dab382-848d-4606-bce7-3228b11b9bcf");
     
-}
+  }
 
-public SpaceStationSpeechletRequestStreamHandler() {
+  public SpaceStationSpeechletRequestStreamHandler() {
     super(new SpaceStationSpeechlet(), supportedApplicationIds);
-}
+  }
 
-public SpaceStationSpeechletRequestStreamHandler(Speechlet speechlet,
-        Set<String> supportedApplicationIds) {
+  public SpaceStationSpeechletRequestStreamHandler(Speechlet speechlet,
+    Set<String> supportedApplicationIds) {
     super(speechlet, supportedApplicationIds);
-}
+  }
 
 }

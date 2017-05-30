@@ -57,21 +57,6 @@
     	<version>1.2.17</version>
     </dependency>
     <dependency>
-    	<groupId>org.eclipse.jetty</groupId>
-    	<artifactId>jetty-server</artifactId>
-    	<version>9.0.6.v20130930</version>
-    </dependency>
-    <dependency>
-    	<groupId>org.eclipse.jetty</groupId>
-    	<artifactId>jetty-servlet</artifactId>
-    	<version>9.0.6.v20130930</version>
-    </dependency>
-    <dependency>
-    	<groupId>com.rometools</groupId>
-    	<artifactId>rome</artifactId>
-    	<version>1.5.1</version>
-    </dependency>
-    <dependency>
     	<groupId>org.jdom</groupId>
     	<artifactId>jdom</artifactId>
     	<version>2.0.2</version>
@@ -81,14 +66,33 @@
     	<artifactId>slf4j-simple</artifactId>
     	<version>1.7.12</version>
     </dependency>
+    <dependency>
+    	<groupId>org.eclipse.jetty</groupId>
+    	<artifactId>jetty-server</artifactId>
+    	<version>9.4.5.v20170502</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.eclipse.jetty</groupId>
+    	<artifactId>jetty-servlet</artifactId>
+    	<version>9.4.5.v20170502</version>
+    </dependency>
+    <dependency>
+    	<groupId>com.rometools</groupId>
+    	<artifactId>rome</artifactId>
+    	<version>1.7.3</version>
+    </dependency>
   </dependencies>
   <build>
   	<plugins>
-  		<plugin>
-  			<groupId>org.apache.maven.plugins</groupId>
-  			<artifactId>maven-compiler-plugin</artifactId>
-  			<version>3.1</version>
-  		</plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.2</version> <!-- or whatever current version -->
+          <configuration>
+            <source>1.8</source>
+            <target>1.8</target>
+          </configuration>
+        </plugin>
   		<plugin>
   			<groupId>org.codehaus.mojo</groupId>
   			<artifactId>exec-maven-plugin</artifactId>
@@ -125,6 +129,11 @@
   			<version>2.4.3</version>
   		</plugin>
   	</plugins>
+  	<resources>
+     <resource>
+       <directory>src/resources</directory>
+     </resource>
+   </resources>
   </build>
   <version>1.4.1</version>
 </project>

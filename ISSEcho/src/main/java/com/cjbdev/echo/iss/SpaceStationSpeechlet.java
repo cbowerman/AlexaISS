@@ -97,7 +97,7 @@ private static final List<KeyValuePair> COUNTRY_LOOKUP = ssListLoader.loadCountr
 //@Override
 public void onSessionStarted(final SessionStartedRequest request, final Session session)
         throws SpeechletException {
-    log.info("onSessionStarted requestId={}, sessionId={}", request.getRequestId(),
+    log.debug("onSessionStarted requestId={}, sessionId={}", request.getRequestId(),
             session.getSessionId());
 
     // any initialization logic goes here
@@ -106,7 +106,7 @@ public void onSessionStarted(final SessionStartedRequest request, final Session 
 //@Override
 public SpeechletResponse onLaunch(final LaunchRequest request, final Session session)
         throws SpeechletException {
-    log.info("onLaunch requestId={}, sessionId={}", request.getRequestId(),
+    log.debug("onLaunch requestId={}, sessionId={}", request.getRequestId(),
             session.getSessionId());
 
     return getWelcomeResponse();
@@ -115,13 +115,14 @@ public SpeechletResponse onLaunch(final LaunchRequest request, final Session ses
 //@Override
 public SpeechletResponse onIntent(final IntentRequest request, final Session session)
         throws SpeechletException {
-    log.info("onIntent requestId={}, sessionId={}", request.getRequestId(),
+	
+    log.debug("onIntent requestId={}, sessionId={}", request.getRequestId(),
             session.getSessionId());
 
     Intent intent = request.getIntent();
     String intentName = intent.getName();
 
-    log.debug("Check intent");
+    log.info("Check intent");
     
     if ("CountryListIntent".equals(intentName)) {
     	return handleCountryListIntentRequest(intent, session); 
@@ -264,7 +265,9 @@ private SpeechletResponse handleStateList(final Intent intent, final Session ses
 	Slot letterSlot = intent.getSlot(SLOT_LETTER);
 	boolean shortList = true;
 	
-	log.debug("In handleStateList method");
+	int stateCount = STATE_LOOKUP.size();
+	
+	log.debug("In handleStateList method - stateCount: " + stateCount);
 	
 	if (letterSlot == null || letterSlot.getValue() == null) {
 		shortList = false;
@@ -650,7 +653,7 @@ private SpeechletResponse handleCityList(final Intent intent, final Session sess
 			}
 		}		
 		
-		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
+		InputStream in = getClass().getResourceAsStream("/speechAssets/states/" + statePair.getValue());
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		
 		String sCurrentLine = "";
@@ -839,7 +842,7 @@ private SpeechletResponse handleCountryLocationList(final Intent intent, final S
 						
 		}		
 		
-		InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/countries/" + countryPair.getValue());
+		InputStream in = getClass().getResourceAsStream("/speechAssets/countries/" + countryPair.getValue());
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		
 		String sCurrentLine = "";
@@ -1133,13 +1136,13 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 		log.debug("Preparing inputStream");
 		InputStream in = null;
 		if (hasCountry) {
-			in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/countries/" + statePair.getValue());
-			log.debug("Got inputStream to: /com/cjbdev/echo/iss/speechAssets/countries/" + statePair.getValue());
+			in = getClass().getResourceAsStream("/speechAssets/countries/" + statePair.getValue());
+			log.debug("Got inputStream to: /speechAssets/countries/" + statePair.getValue());
 		}
 		else {
 			
-			in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
-			log.debug("Got inputStream to: /com/cjbdev/echo/iss/speechAssets/states/" + statePair.getValue());
+			in = getClass().getResourceAsStream("/speechAssets/states/" + statePair.getValue());
+			log.debug("Got inputStream to: /speechAssets/states/" + statePair.getValue());
 		}
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -1177,7 +1180,7 @@ private SpeechletResponse handleCityStateIntentRequest(final Intent intent, fina
 		
 		log.info("Retrieving data for: " + cityPair.getValue());
 	    
-		URL url = new URL("http://spotthestation.nasa.gov/sightings/xml_files/" + cityPair.getValue() + ".xml");
+		URL url = new URL("https://spotthestation.nasa.gov/sightings/xml_files/" + cityPair.getValue() + ".xml");
 		HttpURLConnection httpcon = (HttpURLConnection)url.openConnection();
 
 		// Reading the feed
@@ -1552,7 +1555,7 @@ private SpeechletResponse handleHelpRequest() {
 //@Override
 public void onSessionEnded(final SessionEndedRequest request, final Session session)
         throws SpeechletException {
-    log.info("onSessionEnded requestId={}, sessionId={}", request.getRequestId(),
+    log.debug("onSessionEnded requestId={}, sessionId={}", request.getRequestId(),
             session.getSessionId());
 }
 

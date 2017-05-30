@@ -20,7 +20,7 @@ class SpaceStationListLoader {
 		
 		try {
 
-			InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/states/STATE_LOOKUP");
+			InputStream in = getClass().getResourceAsStream("/speechAssets/states/STATE_LOOKUP");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
 			String sCurrentLine = "";
@@ -55,7 +55,7 @@ class SpaceStationListLoader {
 		
 		try {
 
-			InputStream in = getClass().getResourceAsStream("/com/cjbdev/echo/iss/speechAssets/countries/COUNTRY_LOOKUP");
+			InputStream in = getClass().getResourceAsStream("/speechAssets/countries/COUNTRY_LOOKUP");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
 			String sCurrentLine = "";
